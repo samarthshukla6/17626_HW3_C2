@@ -3,7 +3,7 @@
 Project: co-parenting schedule, expense and communication app (ABC Design Services)
 Team: Samarth Shukla, Kevin Huang
 
-This file covers Step 1 of the assignment. We reviewed both of our A2 goal models, merged them, and chose the goals that make up the system boundary for this sprint. Step 2 adds the analysis of overlaps, dependencies and conflicts to this same file.
+This file covers Steps 1 and 2 of the assignment. In Step 1 we reviewed both of our A2 goal models, merged them, and chose the goals that make up the system boundary for this sprint (sections 1 to 4). In Step 2 we looked at how the selected requirements overlap, depend on each other and conflict, decided what to do about each, and updated the goal model to show those decisions (sections 4 to 6).
 
 ## 0. Notation
 
@@ -14,7 +14,8 @@ This file covers Step 1 of the assignment. We reviewed both of our A2 goal model
 | `SP-n` | Sprint goal (a merged goal in this sprint's model) | section 4 |
 | `REQ-nn` | Sprint requirement | `docs/initial-spec.md`, written in Step 3 |
 | `E-nn` | Stakeholder quote with its transcript line | `docs/evidence.md` |
-| `X-n` | Conflict | analysed in Step 2 |
+| `O-n`, `D-n`, `X-n` | Overlap, dependency, conflict | section 5 |
+| `A-n`, `Q-n` | Assumption, open question for stakeholders | section 6 |
 
 Both of our A2 models numbered goals from G-1, so the IDs clashed. We decided not to renumber. Each original ID keeps its number and gets an `S-` or `K-` prefix, which means anything we trace in this sprint can still be looked up in the A2 submission it came from. When an A2 model had already merged a goal into another one, we cite the goal it was merged into. For example, Kevin merged K-G-53 into K-G-10, so we cite K-G-10.
 
@@ -33,7 +34,7 @@ Samarth's model goes deeper on how a schedule change gets agreed. It covers noti
 
 We both found the same notice conflict on our own. Melissa expects 48 hours and Jason can't always give it. It appears as C-2 in Samarth's model and as the K-G-4 vs K-G-35 link in Kevin's. Since it came out of two separate sets of interviews, we're confident it's a real conflict between the stakeholders and not something one of us caused by how we asked the questions.
 
-One result surprised us. Samarth's model had a tacit goal, S-G-152, saying a tone warning would be private to the sender and kept out of the record. Nobody had actually said that. In Kevin's interview Ruth says the opposite: the parent's choice "should remain visible in the record" (E-50), and a mediator should see it without reading it as misconduct (E-51). We kept S-G-152 in the model but now treat it as contradicted by evidence (see X-6 in Step 2).
+One result surprised us. Samarth's model had a tacit goal, S-G-152, saying a tone warning would be private to the sender and kept out of the record. Nobody had actually said that. In Kevin's interview Ruth says the opposite: the parent's choice "should remain visible in the record" (E-50), and a mediator should see it without reading it as misconduct (E-51). We kept S-G-152 in the model but now treat it as contradicted by evidence (see X-6 in section 5.3).
 
 ## 2. Choosing the sprint scope
 
@@ -76,9 +77,11 @@ Expenses were the hardest slice to leave out. They are just as core and just as 
 | SP-8 The record is neutral and the same for both parents | S-G-106, 109, 142, 143, 149 | K-G-25, 46 | Jason told Kevin the records shouldn't be "used to make me look bad" (E-44). Ruth worried the app could become "a weapon" (E-46) |
 | SP-9 One event shows its whole history | S-G-32, 33 | K-G-23, 52 | Melissa told Kevin she needs the message and "what notice it referred to" (E-48) |
 
-## 4. Sprint goal model (Step 1)
+## 4. Sprint goal model
 
-Arrows are refinements. The grey node holds the slices we deferred; they stay in the model. Each REQ leaf is written out in Step 3.
+Arrows are refinements. Red dashed lines are the conflicts from section 5.3, labelled with their decision. The grey node holds the slices we deferred; they stay in the model. Each REQ leaf is written out in `docs/initial-spec.md`.
+
+We updated this diagram in Step 2. The conflict links are new, and so is the note on S-G-152, which Kevin's evidence contradicts.
 
 ```mermaid
 flowchart TD
@@ -113,7 +116,14 @@ flowchart TD
   SP8 --> R12["REQ-12"]
   SP9 --> R13["REQ-13"]
 
-  DEF["Deferred slices, kept in the model<br/>D exchanges, E expenses, F export and access<br/>G school notices, H tone warning<br/>I child view, J calls"]
+  DEF["Deferred slices, kept in the model<br/>D exchanges, E expenses, F export and access<br/>G school notices, H tone warning<br/>I child view, J calls<br/>(S-G-152 marked contradicted, see X-6)"]
+
+  R04 -. "X-1 48h vs dispatch: allow and label" .- R10
+  R04 -. "X-3 which time counts: server, open" .- R09
+  R09 -. "X-2 server vs phone: keep both" .- R10
+  R14 -. "X-5 emergency vs both confirm" .- R05
+  R12 -. "X-4 outcome wording" .- DEF
+  R12 -. "X-6 tone warning, unresolved" .- DEF
 
   classDef sprint fill:#e8f0ff,stroke:#3b5bdb,color:#000
   classDef req fill:#ffffff,stroke:#555,color:#000
@@ -121,9 +131,97 @@ flowchart TD
   class SP0,SP1,SP2,SP3,SP4,SP5,SP6,SP7,SP8,SP9 sprint
   class R01,R02,R03,R04,R05,R06,R07,R08,R09,R10,R11,R12,R13,R14 req
   class DEF deferred
+  linkStyle 26,27,28,29,30,31 stroke:#d9480f,stroke-dasharray:5 5
 ```
 
-## 5. Deferred goals
+## 5. Relationships between the selected requirements
+
+### 5.1 Overlaps
+
+Some goals from the two models turned out to be the same need in different words. Others looked alike but had to stay apart. For each pair we decided whether to combine them, build them separately, or prioritise one.
+
+| ID | Overlap | Decision | Reason |
+|---|---|---|---|
+| O-1 | S-G-11 (status pending, accepted or declined) and K-G-49 (status visible while waiting for a decision) | Combine into REQ-05 | Same need. K-G-49 was Kevin's only tacit goal, and Melissa says it outright in Samarth's interview (E-21), so the merged goal now has evidence behind it |
+| O-2 | S-G-81 to 83 (written, sent, delivered and read times) and K-G-37 to 39, K-G-72 | Combine into REQ-09 | Jason gives us "when I wrote it" (E-30, E-31) and Ruth gives us failed delivery (E-34). Neither model had all five states on its own |
+| O-3 | S-G-121 and 122 (audit trail, changed items stay visible) and K-G-10 (original entries and correction history) | Combine into REQ-11 | Melissa (E-39) and Ruth (E-38, E-40, E-75) describe the same append-only behaviour |
+| O-4 | S-G-147 (late request labelled), K-G-35 (short notice allowed) and K-G-5 (late change considered if it works for the kids) | Combine into REQ-04 | These are three views of one rule. The request goes through, it gets labelled, and the other parent decides |
+| O-5 | S-G-106 and 149 (no judgments or tallies) and K-G-25 (records credible, fair and accurate) | Combine into REQ-12 | In both models "fair" ends up meaning the same thing: the app never judges, and both parents get the same rules |
+| O-6 | S-G-33 (one event shows everything) and S-G-59 (message, calendar and expense areas kept separate) | Build both, as REQ-13 and REQ-02 | This was inconsistency I-4 in Samarth's A2. Separate areas make things easy to find, and the event view links the related items together |
+| O-7 | S-G-169 (overdue) and S-G-11 (pending) | Build separately. Overdue is a flag on a pending request, not a new status | Melissa doesn't want an unanswered request to look like a decision (E-26) |
+| O-8 | K-G-55 (hashes and chain of custody) and S-G-121 (append-only audit trail), two ways to make tampering visible | Prioritise the append-only trail for V1. Hashes wait for the export slice | Hashes only matter when someone outside the app checks an export. Inside the app, visible edit events already cover what Ruth and Melissa asked for (E-38, E-39) |
+
+### 5.2 Dependencies
+
+| ID | Dependency | What it means for the build |
+|---|---|---|
+| D-1 | REQ-05, 07, 08 and 09 all write to the record, so they depend on REQ-11 | The event log and the trusted clock get built first |
+| D-2 | REQ-03 and REQ-07 depend on REQ-01. A request points at an event in the court plan, and an agreed change is drawn next to it | The plan has to be loaded before any request can exist |
+| D-3 | REQ-04 depends on REQ-09, because notice is measured from a recorded time | Which time we use is conflict X-3 below |
+| D-4 | REQ-10 depends on REQ-09. A request saved offline has a written time but no server time yet | It must never show as sent while it's still waiting on the phone |
+| D-5 | Deferred slices D, E and F all depend on REQ-11 | This is the main reason slice C is in this sprint |
+
+### 5.3 Conflicts
+
+Every conflict below stays in the goal model (section 4). We didn't settle any of them by deleting a goal.
+
+#### X-1. 48-hour notice against short notice caused by dispatch
+
+This is a strong conflict between Melissa and Jason, and it's the one we both found on our own (S C-2, and K-G-4 vs K-G-35). Melissa says the plan requires 48 hours (E-15, E-16) and that a work problem isn't an emergency (E-20). Jason says he can't promise 48 hours (E-18, E-19). He also told Kevin that when he did ask in time, he was accused of making plans without permission (E-29).
+
+We looked at three options. Blocking requests under 48 hours would favour Melissa, but it leaves Jason no proper way to ask, which is exactly how the argument he described started. Ignoring the rule would go against the court plan. The third option was to let the request through, record how much notice was given, and leave the decision to the other parent. We went with that compromise. A short-notice request is never blocked. It's labelled "Short notice: N h given" in neutral words, and like any request it still needs both parents to agree in writing (SP-3). This also fits Melissa's own condition, that she'd consider a late change "only if it truly works for the kids" (E-17). What we can't settle ourselves is whether the court order allows short-notice changes when both parents agree. That's question Q-1.
+
+#### X-2. Server time against phone time
+
+A weaker conflict between Jason and Ruth (S C-3), and Kevin's interviews back it up. Ruth wants times from a trusted server because phone clocks can be wrong (E-32, E-33). Jason needs proof of when he wrote something while he had no signal (E-30, E-31, E-62). Our compromise keeps both times. The server time is the official one. The phone's "written" time is always shown with the label "device time, not verified". That follows Ruth's own advice for anything that can't be checked (E-59).
+
+#### X-3. Which time counts toward notice?
+
+Neither A2 model had this one. It only showed up when we put X-1 next to X-2. Say Jason writes a swap request at a truck stop with no signal, 50 hours before pickup (E-36), and it reaches the server 46 hours before. If we count from the server time, he gave short notice even though he did the right thing. If we count from his phone, he gave enough notice, but nobody can verify it (E-32). For V1 we're counting from the server time, because that's the time everyone can trust, and the request also shows when it was written. We aren't sure this is right. It's the main thing V1 is meant to test, and we've listed it as Q-3.
+
+#### X-4. How outcomes are worded
+
+This conflict sits between the two models. Melissa told Kevin she wants pickups marked "completed, refused, or missed" (E-49). Jason told Samarth he wants weekends shown as "happened, swapped, or changed because of work" (E-55), and never in a way that makes him "look bad" (E-43, E-44). For request outcomes in V1 we use wording that describes what happened and who acted, never what the person is like. Examples: "Pending", "Agreed by both parents", "Declined by Melissa, original schedule applies". Nothing is counted or totalled (S-G-149). Recording actual pickups, where words like "missed" would come up, is in deferred slice D, and the conflict stays open there.
+
+#### X-5. Emergency override against "nothing agreed unless both confirm"
+
+This one is inside Melissa's own interviews (inconsistency I-1 in Samarth's A2). In her first interview she says the original schedule stays in place "unless there's an emergency or another formal decision" (E-60). In the follow-up she says nothing should look agreed unless both parents confirm in writing (E-22), and Jason says the same thing (E-23). We went with the later and more explicit statement, since both parents share it. A claimed emergency is recorded with its reason (REQ-14) and can change how notice is labelled, but it never changes the calendar by itself. How an emergency override would actually work depends on what a "formal decision" is. That's Q-4.
+
+#### X-6. Who sees a tone warning
+
+This is between Ruth in Kevin's interview and Samarth's tacit goal S-G-152, with Jason's concerns in the background. It's outside this sprint, but we're recording it now. Ruth told Kevin that a warning, and whether the parent dismissed it, should stay visible in the record (E-50, E-51). S-G-152 said the opposite, with no evidence behind it. Jason worries about the record being used against him (E-44). We've left this unresolved. We marked S-G-152 as contradicted by evidence instead of deleting it, and added K-G-76 as the alternative a stakeholder actually asked for. That's Q-5.
+
+#### X-7. Written-only contact against urgent calls
+
+A strong conflict between Melissa and Jason (S C-1), outside the sprint. Melissa says the court order limits contact to writing (E-52). Jason wants to be able to call when it's urgent (E-53). Same decision as in A2: calls stay outside the app until someone checks what the order really says. That's Q-6.
+
+## 6. Assumptions and open questions
+
+We had to assume a few things to make the spec testable. The ones we're least sure about are A-3 and A-4, so they're the first things to check in V1.
+
+| ID | Assumption for V1 | Why we needed it | Used in |
+|---|---|---|---|
+| A-1 | One case with two parents. Signing in is mocked with a "Viewing as Melissa / Jason" switch | The prototype has to show both sides without real accounts | REQ-02 |
+| A-2 | The server is simulated inside the app. Its clock is the trusted time, and you can shift a phone's clock to show what skew looks like | A mock prototype has no backend | REQ-09, REQ-11 |
+| A-3 | Notice = start of the affected exchange minus the time the server received the request | Needed so X-3 has a definite answer we can test | REQ-04 |
+| A-4 | A request counts as overdue after 48 hours with no answer, or once the exchange is less than 24 hours away, whichever comes first | Melissa talks about a "notice period" for replies (E-26) but never says how long it is | REQ-08 |
+| A-5 | A request can claim no emergency, an unexpected child illness, or a genuine emergency. The app records the claim and never judges it | Uses Melissa's definitions (E-20, E-61). The app must not judge (E-43) | REQ-14 |
+| A-6 | Mock schedule: alternating weekends from November 2026, pickup Friday 6:00 pm at the school parking area, drop-off Sunday 6:00 pm | Pickup time and place come from S-M1:31 and 33. We made up the Sunday time | REQ-01 |
+| A-7 | "Read" means the other parent opened the request in the app | Gives Jason's "delivered or read" (E-30) a concrete meaning | REQ-09 |
+| A-8 | Only messages that belong to a request (its reason, the response, follow-ups) are in scope. General chat is not | Keeps slice B small, and keeps messages tied to an issue (S-G-32) | REQ-09 |
+
+These are the questions we'd take back to the stakeholders.
+
+| ID | Question | Ask | Comes from |
+|---|---|---|---|
+| Q-1 | Does the parenting plan allow a short-notice change if both parents agree in writing? | Melissa, and the order itself | X-1 |
+| Q-2 | How long does the other parent have to reply before a request counts as overdue? | Melissa, Jason | A-4 |
+| Q-3 | Should notice count from when the request was written or from when it reached the server? | Melissa, Jason, Ruth | X-3 |
+| Q-4 | What counts as a "formal decision" that can override the schedule, and who records it? | Melissa, Ruth | X-5 |
+| Q-5 | Should tone warnings and dismissals be visible to the other parent and the mediator? | Ruth, Jason | X-6 |
+| Q-6 | What exactly does the court order say about phone calls? | Melissa, Jason | X-7 |
+
+## 7. Deferred goals
 
 None of these goals were removed. They're planned for later sprints.
 
@@ -133,6 +231,6 @@ None of these goals were removed. They're planned for later sprints.
 | E. Expenses and disputes | S-G-42 to 53, 97, 100, 128 to 130; K-G-12 to 16, 41 to 45 | E-63, E-64, E-54 | The rules are already clear, so a prototype would teach us less. It's also independent of slice A | Sprint 2 |
 | F. Export and reviewer access | S-G-54 to 56, 131 to 135, 150; K-G-55, 58 to 68 | E-65, E-66 | There's nothing to export until D and E exist | Sprint 3 |
 | G. School and doctor notices | S-G-85 to 89; K-G-27 to 30 | E-67, E-70 | Depends on outside systems that a mock can't really stand in for | Sprint 3 |
-| H. Tone warning | S-G-138 to 141, 152; K-G-73 to 76 | E-69, E-50, E-51 | Who should see the warning is unresolved (X-6) | After we ask Ruth and Jason |
+| H. Tone warning | S-G-138 to 141, 152; K-G-73 to 76 | E-69, E-50, E-51 | Who should see the warning is unresolved (X-6) | After Q-5 is answered |
 | I. Child view | S-G-62, 151; K-G-6 | E-68 | Lower priority than the parents' needs | Later |
-| J. Urgent calls | S-G-93 to 95, 118, 137 | E-52, E-53 | Stays outside the app until someone checks what the court order allows | Not planned |
+| J. Urgent calls | S-G-93 to 95, 118, 137 | E-52, E-53 | Stays outside the app until Q-6 is answered | Not planned |

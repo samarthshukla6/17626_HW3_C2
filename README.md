@@ -6,7 +6,8 @@ This repo holds our sprint for a co-parenting schedule and communication app. We
 
 ## Progress
 
-- Step 1: merged goal model and sprint scope: [docs/goal-model.md](docs/goal-model.md)
+- Step 1: merged goal model and sprint scope, in [docs/goal-model.md](docs/goal-model.md) sections 1 to 4
+- Step 2: overlaps, dependencies, conflicts and assumptions, in [docs/goal-model.md](docs/goal-model.md) sections 5 and 6
 
 We'll add the deliverable links and the roles section as we finish each step.
 
