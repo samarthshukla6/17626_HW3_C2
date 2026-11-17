@@ -209,6 +209,9 @@ We had to assume a few things to make the spec testable. The ones we're least su
 | A-6 | Mock schedule: alternating weekends from November 2026, pickup Friday 6:00 pm at the school parking area, drop-off Sunday 6:00 pm | Pickup time and place come from S-M1:31 and 33. We made up the Sunday time | REQ-01 |
 | A-7 | "Read" means the other parent opened the request in the app | Gives Jason's "delivered or read" (E-30) a concrete meaning | REQ-09 |
 | A-8 | Only messages that belong to a request (its reason, the response, follow-ups) are in scope. General chat is not | Keeps slice B small, and keeps messages tied to an issue (S-G-32) | REQ-09 |
+| A-9 | Only one pending request per scheduled exchange at a time. A second one waits until the first is resolved | Added during `/speckit-clarify`. No stakeholder spoke about this, but two agreed changes for one weekend would contradict each other, which breaks E-22 and E-38 | REQ-03, REQ-05 |
+| A-10 | Declining with an alternative closes the first request as Declined and opens a new request with the roles swapped | Added during `/speckit-clarify`. Changing the first request in place would break append-only (E-40), and the swap means the counter-offer still needs written agreement | REQ-06, REQ-11 |
+| A-11 | A sender can edit only the proposed time and the alternative date. The event, reason and emergency tag stay as sent, and extra context goes in a follow-up | Added during `/speckit-clarify`. Rewriting the reason after the other parent read it is the quiet change Melissa and Ruth warned about (E-39, E-38) | REQ-11, REQ-14 |
 
 These are the questions we'd take back to the stakeholders.
 
