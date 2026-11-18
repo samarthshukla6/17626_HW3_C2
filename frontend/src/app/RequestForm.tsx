@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { createRequest } from "../domain/requests";
+import type { ChangeRequestView } from "../domain/requests";
 import type { EmergencyTag, Parent } from "../domain/types";
 import { strings } from "../copy/strings";
 import { parseLocalInputAsUTC } from "../domain/format";
@@ -7,7 +8,7 @@ import { parseLocalInputAsUTC } from "../domain/format";
 interface RequestFormProps {
   affectedScheduleEntryId: string;
   author: Parent;
-  onCreated: () => void;
+  onCreated: (request: ChangeRequestView) => void;
 }
 
 type EmergencyChoice = "none" | EmergencyTag;
@@ -52,7 +53,7 @@ export function RequestForm({ affectedScheduleEntryId, author, onCreated }: Requ
     setAlternativeTime("");
     setReason("");
     setEmergencyChoice("none");
-    onCreated();
+    onCreated(result.value);
   }
 
   return (

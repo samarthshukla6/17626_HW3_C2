@@ -2,7 +2,8 @@ import { describe, it, expect } from "vitest";
 import { addDisputeNote, addFollowUp, createRequest, editRequest, respond, withdrawRequest } from "../../src/domain/requests";
 import { setDeviceClockOffset } from "../../src/domain/clock";
 import { getEvents } from "../../src/domain/events";
-import { failNextDelivery, getDeliveryState } from "../../src/domain/delivery";
+import { failNextDelivery, getDeliveryState, retryDelivery } from "../../src/domain/delivery";
+import { setOnline } from "../../src/domain/offlineQueue";
 import { formatTime } from "../../src/domain/format";
 import { strings } from "../../src/copy/strings";
 import { resetDomain, FRI_20_NOV } from "./testHelpers";
@@ -30,7 +31,7 @@ describe("REQ-09 Separate, honest timestamps", () => {
 
     // notice is calculated from the server-received time (2026-11-18T10:00), not the
     // written time (2026-11-18T12:00): 56 whole hours until Fri 20 Nov 18:00.
-    expect(created.value.noticeLabel).toBe("56 h notice given");
+    expect(created.value.noticeLabel).toBe("56 h notice at server");
   });
 
   it("a failed delivery shows 'Not delivered' and is never shown as delivered or read", () => {
@@ -49,6 +50,37 @@ describe("REQ-09 Separate, honest timestamps", () => {
     const createEvent = getEvents(created.value.id).find((e) => e.type === "create")!;
     expect(getDeliveryState(createEvent.id)).toBe("not-delivered");
     expect(strings.notDelivered()).toBe("Not delivered");
+  });
+
+  it("distinguishes offline waiting and keeps failure evidence after sender retry", () => {
+    resetDomain([FRI_20_NOV], "2026-11-18T18:00:00.000Z");
+    setOnline("Melissa", false);
+    const waiting = createRequest({
+      author: "Jason",
+      affectedScheduleEntryId: FRI_20_NOV.id,
+      proposedTime: "2026-11-27T18:00:00.000Z",
+      reason: "Work trip",
+    });
+    expect(waiting.ok).toBe(true);
+    if (!waiting.ok) return;
+    const waitingEvent = getEvents(waiting.value.id).find((e) => e.type === "create")!;
+    expect(getDeliveryState(waitingEvent.id)).toBe("waiting-offline");
+
+    resetDomain([FRI_20_NOV], "2026-11-18T18:00:00.000Z");
+    failNextDelivery();
+    const failed = createRequest({
+      author: "Jason",
+      affectedScheduleEntryId: FRI_20_NOV.id,
+      proposedTime: "2026-11-27T18:00:00.000Z",
+      reason: "Work trip",
+    });
+    expect(failed.ok).toBe(true);
+    if (!failed.ok) return;
+    const failedEvent = getEvents(failed.value.id).find((e) => e.type === "create")!;
+    expect(retryDelivery(failedEvent.id, "Melissa")).toBe(false);
+    expect(retryDelivery(failedEvent.id, "Jason")).toBe(true);
+    expect(getDeliveryState(failedEvent.id)).toBe("delivered");
+    expect(getEvents(failed.value.id).some((e) => e.type === "delivery-failed")).toBe(true);
   });
 
   it("every time except written comes from the server clock", () => {

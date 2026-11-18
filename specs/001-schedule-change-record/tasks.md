@@ -291,21 +291,21 @@ Each story after US1 extends `requests.ts` rather than replacing it, so earlier 
 
 ### Tests
 
-- [ ] T068 [P] [US3] Update `frontend/tests/domain/req-10.test.ts` and `frontend/tests/app/queuedCard.test.tsx` for F-1/F-2: an offline item shows its written time and "Not sent yet" with no Pending status. (REQ-05, REQ-10)
-- [ ] T069 [P] [US3] Update `frontend/tests/domain/req-04.test.ts` for F-6: server notice stays official and the 50-hour written figure appears as unverified context beside the 46-hour warning. (REQ-04)
-- [ ] T070 [P] [US3] Add tests in `frontend/tests/domain/req-09.test.ts` for F-4/F-5: waiting-offline and failed are distinct, Retry appends delivery without removing failure, and only the sender can retry. (REQ-09, REQ-11)
-- [ ] T071 [P] [US3] Add tests in `frontend/tests/app/requestCard.test.tsx` for F-3: list rendering does not mark read; explicit Open details does. (REQ-09)
-- [ ] T072 [P] [US2] Add tests in `frontend/tests/app/app.test.tsx` and `frontend/tests/app/requestForm.test.tsx` for selected-parent styling and submission feedback/navigation. (F-7, F-8, REQ-02, REQ-03)
-- [ ] T073 [P] [US1] Add a test in `frontend/tests/app/respond-flow.test.tsx` that decline-with-alternative keeps a valid datetime value and creates the linked request. (F-10, REQ-06)
-- [ ] T074 [P] [US4] Add a structure test in `frontend/tests/app/requestCard.test.tsx` for separate event and timestamp lines. (F-9, REQ-09, REQ-13)
+- [x] T068 [P] [US3] Update `frontend/tests/domain/req-10.test.ts` and `frontend/tests/app/queuedCard.test.tsx` for F-1/F-2: an offline item shows its written time and "Not sent yet" with no Pending status. (REQ-05, REQ-10)
+- [x] T069 [P] [US3] Update `frontend/tests/domain/req-04.test.ts` for F-6: server notice stays official and the 50-hour written figure appears as unverified context beside the 46-hour warning. (REQ-04)
+- [x] T070 [P] [US3] Add tests in `frontend/tests/domain/req-09.test.ts` for F-4/F-5: waiting-offline and failed are distinct, Retry appends delivery without removing failure, and only the sender can retry. (REQ-09, REQ-11)
+- [x] T071 [P] [US3] Add tests in `frontend/tests/app/requestCard.test.tsx` for F-3: list rendering does not mark read; explicit Open details does. (REQ-09)
+- [x] T072 [P] [US2] Add tests in `frontend/tests/app/app.test.tsx` and `frontend/tests/app/requestForm.test.tsx` for selected-parent styling and submission feedback/navigation. (F-7, F-8, REQ-02, REQ-03)
+- [x] T073 [P] [US1] Add a test in `frontend/tests/app/respond-flow.test.tsx` that decline-with-alternative keeps a valid datetime value and creates the linked request. (F-10, REQ-06)
+- [x] T074 [P] [US4] Add a structure test in `frontend/tests/app/requestCard.test.tsx` for separate event and timestamp lines. (F-9, REQ-09, REQ-13)
 
 ### Implementation
 
-- [ ] T075 [US3] Implement queued written time and no-status semantics in `frontend/src/domain/requests.ts` and `frontend/src/app/RequestCard.tsx`. (F-1, F-2, REQ-05, REQ-10; depends on T068)
-- [ ] T076 [US3] Implement the X-3 notice label with official server and unverified written figures in `frontend/src/domain/requests.ts` and `frontend/src/copy/strings.ts`. (F-6, REQ-04; depends on T069)
-- [ ] T077 [US3] Implement waiting-offline wording, explicit retry and append-only recovery in `frontend/src/domain/delivery.ts`, `frontend/src/app/RequestCard.tsx` and `frontend/src/copy/strings.ts`. (F-4, F-5, REQ-09, REQ-11; depends on T070)
-- [ ] T078 [US3] Remove render-time read marking and add explicit Open details behavior in `frontend/src/app/RequestCard.tsx`. (F-3, REQ-09; depends on T071)
-- [ ] T079 [P] [US2] Implement selected-parent styling and submission feedback/navigation in `frontend/src/app/ViewingAsSwitch.tsx`, `frontend/src/app/App.tsx`, `frontend/src/app/Schedule.tsx` and `frontend/src/index.css`. (F-7, F-8, REQ-02, REQ-03; depends on T072)
-- [ ] T080 [P] [US1] Fix alternative datetime value handling in `frontend/src/app/RequestCard.tsx`. (F-10, REQ-06; depends on T073)
-- [ ] T081 [P] [US4] Add readable block formatting for request events and timestamps in `frontend/src/app/RequestCard.tsx`, `frontend/src/app/History.tsx`, `frontend/src/app/EventDetail.tsx` and `frontend/src/index.css`. (F-9, REQ-09, REQ-13; depends on T074)
+- [x] T075 [US3] Implement queued written time and no-status semantics in `frontend/src/domain/requests.ts` and `frontend/src/app/RequestCard.tsx`. (F-1, F-2, REQ-05, REQ-10; depends on T068)
+- [x] T076 [US3] Implement the X-3 notice label with official server and unverified written figures in `frontend/src/domain/requests.ts` and `frontend/src/copy/strings.ts`. (F-6, REQ-04; depends on T069)
+- [x] T077 [US3] Implement waiting-offline wording, explicit retry and append-only recovery in `frontend/src/domain/delivery.ts`, `frontend/src/app/RequestCard.tsx` and `frontend/src/copy/strings.ts`. (F-4, F-5, REQ-09, REQ-11; depends on T070)
+- [x] T078 [US3] Remove render-time read marking and add explicit Open details behavior in `frontend/src/app/RequestCard.tsx`. (F-3, REQ-09; depends on T071)
+- [x] T079 [P] [US2] Implement selected-parent styling and submission feedback/navigation in `frontend/src/app/ViewingAsSwitch.tsx`, `frontend/src/app/App.tsx`, `frontend/src/app/Schedule.tsx` and `frontend/src/index.css`. (F-7, F-8, REQ-02, REQ-03; depends on T072)
+- [x] T080 [P] [US1] Fix alternative datetime value handling in `frontend/src/app/RequestCard.tsx`. (F-10, REQ-06; depends on T073)
+- [x] T081 [P] [US4] Add readable block formatting for request events and timestamps in `frontend/src/app/RequestCard.tsx`, `frontend/src/app/History.tsx`, `frontend/src/app/EventDetail.tsx` and `frontend/src/index.css`. (F-9, REQ-09, REQ-13; depends on T074)
 - [ ] T082 Run `npm test -- --run` and `npm run build` in `frontend/`, then update `docs/traceability.md` with V2 evidence while leaving browser-only V2 status pending. (depends on T075-T081)

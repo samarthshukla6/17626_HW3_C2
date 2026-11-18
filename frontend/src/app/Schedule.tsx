@@ -4,14 +4,16 @@ import { strings } from "../copy/strings";
 import { formatDateTime } from "../domain/format";
 import type { Parent } from "../domain/types";
 import { RequestForm } from "./RequestForm";
+import type { ChangeRequestView } from "../domain/requests";
 
 interface ScheduleProps {
   viewer: Parent;
+  onRequestCreated?: (request: ChangeRequestView) => void;
 }
 
 /** REQ-01, REQ-03, REQ-07, REQ-10, REQ-14: original entries, never editable,
  * with agreed changes next to them, and a "Request a change" form per row. */
-export function Schedule({ viewer }: ScheduleProps): React.ReactElement {
+export function Schedule({ viewer, onRequestCreated }: ScheduleProps): React.ReactElement {
   const [, setRefreshToken] = useState(0);
   const [openFormFor, setOpenFormFor] = useState<string | undefined>(undefined);
   const rows = getSchedule();
@@ -43,9 +45,10 @@ export function Schedule({ viewer }: ScheduleProps): React.ReactElement {
             <RequestForm
               affectedScheduleEntryId={row.entry.id}
               author={viewer}
-              onCreated={() => {
+              onCreated={(request) => {
                 setOpenFormFor(undefined);
                 onChanged();
+                onRequestCreated?.(request);
               }}
             />
           ) : (

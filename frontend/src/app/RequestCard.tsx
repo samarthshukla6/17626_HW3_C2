@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { addDisputeNote, addFollowUp, editRequest, respond, withdrawRequest } from "../domain/requests";
 import type { ChangeRequestView } from "../domain/requests";
 import type { Parent } from "../domain/types";
 import { getEvents } from "../domain/events";
-import { getDeliveryState, markRead } from "../domain/delivery";
+import { getDeliveryState, markRead, retryDelivery } from "../domain/delivery";
 import { strings } from "../copy/strings";
 import { formatDateTime, formatTime, parseLocalInputAsUTC } from "../domain/format";
 
@@ -29,6 +29,7 @@ export function RequestCard({ request, viewer, onChanged }: RequestCardProps): R
   const [editProposedTime, setEditProposedTime] = useState("");
   const [followUpText, setFollowUpText] = useState("");
   const [disputeText, setDisputeText] = useState("");
+  const [detailsOpen, setDetailsOpen] = useState(viewer === request.proposer);
 
   // T064: a queued (not-yet-sent) item isn't a real request on the server
   // yet - no action can target it until the server actually has it.
@@ -44,7 +45,7 @@ export function RequestCard({ request, viewer, onChanged }: RequestCardProps): R
   const items = allEvents.filter(
     (e) => e.type !== "delivered" && e.type !== "read" && e.type !== "delivery-failed",
   );
-  useEffect(() => {
+  function openDetails(): void {
     let markedAny = false;
     for (const item of items) {
       if (item.author !== viewer && getDeliveryState(item.id) === "delivered") {
@@ -55,8 +56,8 @@ export function RequestCard({ request, viewer, onChanged }: RequestCardProps): R
     if (markedAny) {
       onChanged();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [items.map((i) => `${i.id}:${getDeliveryState(i.id)}`).join(","), viewer]);
+    setDetailsOpen(true);
+  }
 
   function handleWithdraw(): void {
     withdrawRequest(request.id, viewer);
@@ -102,7 +103,8 @@ export function RequestCard({ request, viewer, onChanged }: RequestCardProps): R
       author: viewer,
       decision: "decline",
       reason,
-      alternativeTime: showAlternative && alternativeTime ? alternativeTime : undefined,
+      alternativeTime:
+        showAlternative && alternativeTime ? parseLocalInputAsUTC(alternativeTime) : undefined,
     });
     if (result.ok) {
       setStep("idle");
@@ -118,23 +120,42 @@ export function RequestCard({ request, viewer, onChanged }: RequestCardProps): R
       <p className="request-card__summary">
         {request.proposer} proposed {formatDateTime(request.proposedTime)} — {request.reason}
       </p>
-      <p className="request-card__status">Status: {request.status}</p>
+      {request.status ? (
+        <p className="request-card__status">Status: {request.status}</p>
+      ) : (
+        <p className="request-card__status">Not sent yet</p>
+      )}
 
       {request.savedOnDeviceWrittenTime ? (
-        <p className="request-card__saved">{strings.savedOnDeviceNotSentYet()}</p>
+        <div className="request-card__saved">
+          <p>{strings.savedOnDeviceNotSentYet()}</p>
+          <p>{strings.writtenDeviceTime(formatTime(request.savedOnDeviceWrittenTime))}</p>
+        </div>
       ) : (
         <>
           <p className="request-card__notice">{request.noticeLabel}</p>
+          {request.writtenNoticeContext ? (
+            <p className="request-card__notice-context">{request.writtenNoticeContext}</p>
+          ) : null}
           {request.overdue ? <p className="request-card__overdue">{strings.overdueFlag()}</p> : null}
           {request.status === "Lapsed" ? <p>{strings.lapsedMessage()}</p> : null}
-          <ul className="request-card__timestamps">
+          {viewer !== request.proposer && !detailsOpen ? (
+            <button type="button" onClick={openDetails}>
+              Open details
+            </button>
+          ) : null}
+          {detailsOpen ? <ul className="request-card__timestamps">
             {items.map((item) => {
               const itemState = getDeliveryState(item.id);
-              const deliveredEvent = allEvents.find((e) => e.type === "delivered" && e.targetEventId === item.id);
-              const readEvent = allEvents.find((e) => e.type === "read" && e.targetEventId === item.id);
-              const failedEvent = allEvents.find(
+              const deliveredEvent = allEvents.filter(
+                (e) => e.type === "delivered" && e.targetEventId === item.id,
+              ).at(-1);
+              const readEvent = allEvents.filter(
+                (e) => e.type === "read" && e.targetEventId === item.id,
+              ).at(-1);
+              const failedEvent = allEvents.filter(
                 (e) => e.type === "delivery-failed" && e.targetEventId === item.id,
-              );
+              ).at(-1);
               const trackingTime =
                 itemState === "read"
                   ? readEvent?.serverTime
@@ -151,19 +172,32 @@ export function RequestCard({ request, viewer, onChanged }: RequestCardProps): R
                     <span>{strings.writtenDeviceTime(formatTime(item.writtenTime))}</span>
                   ) : null}
                   <span>{strings.receivedByServer(formatTime(item.serverTime))}</span>
-                  <span>
+                  <span className="request-card__delivery">
                     {itemState === "not-delivered"
                       ? strings.notDeliveredAt(trackingTime ? formatTime(trackingTime) : "")
                       : itemState === "read"
                         ? strings.readAt(trackingTime ? formatTime(trackingTime) : "")
                         : itemState === "delivered"
                           ? strings.deliveredAt(trackingTime ? formatTime(trackingTime) : "")
-                          : "Not delivered yet"}
+                          : itemState === "waiting-offline"
+                            ? strings.waitingForOfflineParent()
+                            : strings.waitingForDelivery()}
                   </span>
+                  {itemState === "not-delivered" && item.author === viewer ? (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        retryDelivery(item.id, viewer);
+                        onChanged();
+                      }}
+                    >
+                      Retry
+                    </button>
+                  ) : null}
                 </li>
               );
             })}
-          </ul>
+          </ul> : null}
         </>
       )}
 
@@ -281,7 +315,7 @@ export function RequestCard({ request, viewer, onChanged }: RequestCardProps): R
               <input
                 type="datetime-local"
                 value={alternativeTime}
-                onChange={(e) => setAlternativeTime(parseLocalInputAsUTC(e.target.value))}
+                onChange={(e) => setAlternativeTime(e.target.value)}
               />
             </label>
           )}

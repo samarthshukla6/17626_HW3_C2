@@ -39,3 +39,40 @@ describe("T062: event-detail buttons are labelled with the exchange date, not it
     expect(screen.queryByText(/weekend-1-pickup/)).not.toBeInTheDocument();
   });
 });
+
+describe("V2 selected parent and request submission feedback", () => {
+  beforeEach(() => {
+    localStorage.clear();
+    _resetLog();
+    _resetOfflineQueue();
+    _resetScheduleEntries();
+    _resetAppSeed();
+  });
+
+  it("makes the selected parent explicit", async () => {
+    const user = userEvent.setup();
+    render(<App />);
+    expect(screen.getByText("Current parent: Melissa")).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Jason" }));
+    expect(screen.getByText("Current parent: Jason")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Jason" })).toHaveAttribute("aria-pressed", "true");
+  });
+
+  it("opens Requests and confirms a successful submission", async () => {
+    const user = userEvent.setup();
+    render(<App />);
+    await user.click(screen.getByRole("button", { name: "Jason" }));
+    await user.click(screen.getByRole("button", { name: "Schedule" }));
+    const requestButtons = screen.getAllByRole("button", { name: "Request a change" });
+    await user.click(requestButtons[0]);
+    const proposed = screen.getByLabelText("Proposed date and time") as HTMLInputElement;
+    proposed.value = "2026-11-27T18:00";
+    proposed.dispatchEvent(new Event("change", { bubbles: true }));
+    await user.type(screen.getByLabelText("Reason"), "Dispatch changed my route");
+    const submit = document.querySelector<HTMLButtonElement>(".request-form button[type='submit']");
+    expect(submit).not.toBeNull();
+    await user.click(submit!);
+    expect(screen.getByText("Request submitted")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Requests" })).toBeInTheDocument();
+  });
+});

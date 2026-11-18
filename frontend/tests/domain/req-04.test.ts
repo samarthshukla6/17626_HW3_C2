@@ -4,10 +4,10 @@ import { resetDomain, FRI_20_NOV } from "./testHelpers";
 
 describe("REQ-04 Notice is recorded, never used to block", () => {
   it.each([
-    { received: "2026-11-18T18:00:00.000Z", label: "48 h notice given" },
-    { received: "2026-11-18T18:01:00.000Z", label: "Short notice: 47 h given (plan asks for 48 h)" },
-    { received: "2026-11-17T18:00:00.000Z", label: "72 h notice given" },
-    { received: "2026-11-20T15:00:00.000Z", label: "Short notice: 3 h given (plan asks for 48 h)" },
+    { received: "2026-11-18T18:00:00.000Z", label: "48 h notice at server" },
+    { received: "2026-11-18T18:01:00.000Z", label: "Short notice: 47 h at server (plan asks for 48 h)" },
+    { received: "2026-11-17T18:00:00.000Z", label: "72 h notice at server" },
+    { received: "2026-11-20T15:00:00.000Z", label: "Short notice: 3 h at server (plan asks for 48 h)" },
   ])("notice label at $received is '$label', and the request is still delivered", ({ received, label }) => {
     resetDomain([FRI_20_NOV], received);
 

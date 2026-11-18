@@ -13,8 +13,9 @@ export function History(): React.ReactElement {
       ) : (
         <ul>
           {events.map((event) => (
-            <li key={event.id}>
-              {formatDateTime(event.serverTime)} — {event.author} — {event.type}
+            <li key={event.id} className="timeline-item">
+              <span className="timeline-item__description">{event.author}: {event.type}</span>
+              <span className="timeline-item__time">{formatDateTime(event.serverTime)}</span>
             </li>
           ))}
         </ul>
