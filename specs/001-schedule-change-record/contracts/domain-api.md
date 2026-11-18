@@ -36,11 +36,15 @@ dispute note is an "item" that the other parent receives.
 - When the server appends an item, the system records a `delivered` event for it straight away
   if the recipient is online, or at the moment the recipient next comes online. Its `serverTime`
   is that moment.
-- `markRead(itemEventId, reader)`: called when the recipient opens the request or the event
-  detail that shows the item. Records one `read` event per item, only after `delivered` (A-7).
+- `markRead(itemEventId, reader)`: called only when the recipient explicitly opens request
+  details. Records one `read` event per item, only after `delivered` (A-12, F-3).
 - `failNextDelivery()`: Demo Controls only. The next item that would be delivered gets a
   `delivery-failed` event instead, with the server time of the failure. That item never shows
-  as delivered or read in V1, and the sender sees "Not delivered" (FR-009).
+  as delivered or read until recovery, and the sender sees "Not delivered" (FR-009).
+- `retryDelivery(itemEventId, sender)`: allowed only for the item's author after a recorded
+  failure. Success appends `delivered`; the earlier failure remains.
+- `getDeliveryState(itemEventId)`: returns waiting, failed, delivered or read. Waiting includes
+  whether the recipient is offline so the UI can use A-13's exact wording.
 - `delivered`, `read` and `delivery-failed` events carry `targetEventId`, the item they refer
   to, and are authored by the system on behalf of the recipient's app.
 
@@ -73,9 +77,9 @@ dispute note is an "item" that the other parent receives.
 - `addFollowUp(requestId, author, text) → Result<...>` / `addDisputeNote(requestId, author,
   text) → Result<...>`, reject empty `text` (FR-008, FR-014).
 - `getChangeRequest(requestId) → ChangeRequest`, the derived view from Data Model, including
-  `status`, `overdue`, and `noticeLabel`.
+  `status`, `overdue`, `noticeLabel`, and optional `writtenNoticeContext`.
 - `listRequestsFor(parent) → ChangeRequest[]`, every request where `parent` is proposer or
-  responder.
+  responder, plus that parent's local queued views. A queued view has no server status.
 
 ## Record view (`domain/record.ts`), REQ-02, 13
 

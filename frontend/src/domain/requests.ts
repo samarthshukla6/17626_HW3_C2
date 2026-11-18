@@ -23,8 +23,9 @@ export interface ChangeRequestView {
   alternativeTime?: string;
   reason: string;
   emergencyTag?: EmergencyTag;
-  status: RequestStatus;
+  status?: RequestStatus;
   noticeLabel: string;
+  writtenNoticeContext?: string;
   overdue: boolean;
   linkedFromRequestId?: string;
   createdServerTime: string;
@@ -106,6 +107,11 @@ export function getChangeRequest(requestId: string): ChangeRequestView | undefin
   const noticeHours = wholeHoursBetween(entryStart, createdAt);
   const noticeLabel =
     noticeHours >= 48 ? strings.noticeGiven(noticeHours) : strings.shortNoticeGiven(noticeHours);
+  const writtenNoticeHours = createEvt.writtenTime
+    ? wholeHoursBetween(entryStart, new Date(createEvt.writtenTime))
+    : noticeHours;
+  const writtenNoticeContext =
+    writtenNoticeHours !== noticeHours ? strings.writtenNoticeContext(writtenNoticeHours) : undefined;
 
   const overdue =
     status === "Pending" &&
@@ -122,6 +128,7 @@ export function getChangeRequest(requestId: string): ChangeRequestView | undefin
     emergencyTag: createPayload.emergencyTag,
     status,
     noticeLabel,
+    writtenNoticeContext,
     overdue,
     linkedFromRequestId: createPayload.linkedFromRequestId,
     createdServerTime: createEvt.serverTime,
@@ -149,7 +156,7 @@ export function getQueuedRequestViews(parent: Parent): ChangeRequestView[] {
         alternativeTime: payload.alternativeTime,
         reason: payload.reason,
         emergencyTag: payload.emergencyTag,
-        status: "Pending" as RequestStatus,
+        status: undefined,
         noticeLabel: "",
         overdue: false,
         linkedFromRequestId: payload.linkedFromRequestId,
@@ -216,7 +223,7 @@ export function createRequest(input: CreateRequestInput): Result<ChangeRequestVi
         alternativeTime: input.alternativeTime,
         reason: input.reason,
         emergencyTag: input.emergencyTag,
-        status: "Pending",
+        status: undefined,
         noticeLabel: "",
         overdue: false,
         linkedFromRequestId: input.linkedFromRequestId,

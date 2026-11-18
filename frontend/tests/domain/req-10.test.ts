@@ -32,7 +32,10 @@ describe("REQ-10 Nothing is lost without signal", () => {
 
     const melissaSees = listRequestsFor("Melissa");
     expect(melissaSees).toHaveLength(1);
-    expect(melissaSees[0].noticeLabel).toBe("Short notice: 46 h given (plan asks for 48 h)");
+    expect(melissaSees[0].noticeLabel).toBe("Short notice: 46 h at server (plan asks for 48 h)");
+    expect(melissaSees[0].writtenNoticeContext).toBe(
+      "Written 50 h before (device time, not verified)",
+    );
     expect(strings.writtenDeviceTime(formatTime(written.value.savedOnDeviceWrittenTime!))).toBe(
       "Written 16:00 (device time, not verified)",
     );

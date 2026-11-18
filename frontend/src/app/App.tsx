@@ -11,6 +11,8 @@ import { History } from "./History";
 import { EventDetail } from "./EventDetail";
 import { DemoControls } from "./DemoControls";
 import { formatDateOnly } from "../domain/format";
+import type { ChangeRequestView } from "../domain/requests";
+import { strings } from "../copy/strings";
 
 type View = "home" | "schedule" | "requests" | "history" | "eventDetail";
 
@@ -52,6 +54,7 @@ export function App(): React.ReactElement {
   const [view, setView] = useState<View>("home");
   const [selectedEntryId, setSelectedEntryId] = useState<string | undefined>(undefined);
   const [showDemoControls, setShowDemoControls] = useState(false);
+  const [submissionMessage, setSubmissionMessage] = useState<string | undefined>(undefined);
   const [, setRefreshToken] = useState(0);
 
   function onChanged(): void {
@@ -63,9 +66,18 @@ export function App(): React.ReactElement {
     setView("eventDetail");
   }
 
+  function handleRequestCreated(request: ChangeRequestView): void {
+    setSubmissionMessage(
+      request.savedOnDeviceWrittenTime ? strings.savedOnDeviceNotSentYet() : strings.requestSubmitted(),
+    );
+    setView("requests");
+  }
+
   return (
     <div className="app" style={{ maxWidth: "375px", margin: "0 auto" }}>
       <ViewingAsSwitch viewer={viewer} onChange={setViewer} />
+
+      {submissionMessage ? <p role="status" className="submission-message">{submissionMessage}</p> : null}
 
       <nav aria-label="Main navigation">
         <button type="button" onClick={() => setView("home")}>
@@ -85,7 +97,7 @@ export function App(): React.ReactElement {
       {view === "home" && <Home viewer={viewer} />}
       {view === "schedule" && (
         <div>
-          <Schedule viewer={viewer} />
+          <Schedule viewer={viewer} onRequestCreated={handleRequestCreated} />
           {getScheduleEntries().map((entry) => (
             <button key={entry.id} type="button" onClick={() => openEvent(entry.id)}>
               Open {formatDateOnly(entry.startDateTime)}
@@ -96,7 +108,11 @@ export function App(): React.ReactElement {
       {view === "requests" && <Requests viewer={viewer} />}
       {view === "history" && <History />}
       {view === "eventDetail" && selectedEntryId && (
-        <EventDetail scheduleEntryId={selectedEntryId} viewer={viewer} />
+        <EventDetail
+          scheduleEntryId={selectedEntryId}
+          viewer={viewer}
+          onRequestCreated={handleRequestCreated}
+        />
       )}
 
       <footer>

@@ -55,7 +55,9 @@ export function getHomeSummary(parent: Parent): HomeSummary {
 
   const myRequests = listRequestsFor(parent);
   const waitingOnYou = myRequests.filter((r) => r.responder === parent && r.status === "Pending");
-  const pendingInvolvingYou = myRequests.filter((r) => r.status === "Pending");
+  const pendingInvolvingYou = myRequests.filter(
+    (r) => r.status === "Pending" || !!r.savedOnDeviceWrittenTime,
+  );
 
   return { nextExchange, waitingOnYou, pendingInvolvingYou };
 }

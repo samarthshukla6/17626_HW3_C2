@@ -5,7 +5,7 @@ import { getHomeSummary } from "../../src/domain/record";
 import { resetDomain, FRI_20_NOV } from "./testHelpers";
 
 describe("T064: a queued (offline) request stays visible to its sender", () => {
-  it("listRequestsFor the sender includes the queued item as Pending, with its written time", () => {
+  it("listRequestsFor the sender includes the queued item with no server status and its written time", () => {
     resetDomain([FRI_20_NOV], "2026-11-18T16:00:00.000Z");
     setOnline("Jason", false);
 
@@ -21,7 +21,7 @@ describe("T064: a queued (offline) request stays visible to its sender", () => {
     const jasonsRequests = listRequestsFor("Jason");
     const queued = jasonsRequests.find((r) => r.id === written.value.id);
     expect(queued).toBeDefined();
-    expect(queued?.status).toBe("Pending");
+    expect(queued?.status).toBeUndefined();
     expect(queued?.savedOnDeviceWrittenTime).toBe(written.value.savedOnDeviceWrittenTime);
 
     // still there after the form/caller that created it is long gone - a
@@ -43,7 +43,7 @@ describe("T064: a queued (offline) request stays visible to its sender", () => {
     expect(listRequestsFor("Melissa")).toHaveLength(0);
   });
 
-  it("appears in Jason's Home summary as a Pending item, and disappears from the queue once he's back online", () => {
+  it("appears in Jason's Home summary as an unsent item, and leaves the queue once he's back online", () => {
     resetDomain([FRI_20_NOV], "2026-11-18T16:00:00.000Z");
     setOnline("Jason", false);
 

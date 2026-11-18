@@ -46,15 +46,27 @@ export const strings = {
 
   changedByAgreementOriginalKept: (): string => "Changed by agreement, original kept",
 
-  noticeGiven: (hours: number): string => `${hours} h notice given`,
+  noticeGiven: (hours: number): string => `${hours} h notice at server`,
 
-  shortNoticeGiven: (hours: number): string => `Short notice: ${hours} h given (plan asks for 48 h)`,
+  shortNoticeGiven: (hours: number): string =>
+    `Short notice: ${hours} h at server (plan asks for 48 h)`,
+
+  writtenNoticeContext: (hours: number): string =>
+    `Written ${hours} h before (device time, not verified)`,
 
   overdueFlag: (): string => "Awaiting response, overdue",
 
   lapsedMessage: (): string => "No response before the exchange, original schedule applied.",
 
   savedOnDeviceNotSentYet: (): string => "Saved on this device, not sent yet",
+
+  notSentYet: (): string => "Not sent yet",
+
+  waitingForOfflineParent: (): string => "Waiting to be delivered (other parent offline)",
+
+  waitingForDelivery: (): string => "Waiting to be delivered",
+
+  requestSubmitted: (): string => "Request submitted",
 
   notDelivered: (): string => "Not delivered",
 

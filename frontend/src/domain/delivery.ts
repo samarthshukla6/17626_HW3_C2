@@ -1,6 +1,7 @@
 import { appendEvent, getEvents } from "./events";
 import { getServerTime } from "./clock";
 import { isOnline } from "./offlineQueue";
+import { otherParent } from "./types";
 import type { DomainEvent, Parent } from "./types";
 
 let pendingFailures = 0;
@@ -10,7 +11,7 @@ export function failNextDelivery(): void {
   pendingFailures += 1;
 }
 
-export type DeliveryState = "pending" | "delivered" | "read" | "not-delivered";
+export type DeliveryState = "waiting" | "waiting-offline" | "delivered" | "read" | "not-delivered";
 
 /**
  * Called right after an item event (create/edit/withdraw/accept/decline/
@@ -83,18 +84,29 @@ export function markRead(itemEventId: string, reader: Parent): void {
   });
 }
 
+/** F-5: the sender may retry a recorded failure; history remains append-only. */
+export function retryDelivery(itemEventId: string, sender: Parent): boolean {
+  const item = getEvents().find((e) => e.id === itemEventId);
+  if (!item || item.author !== sender || getDeliveryState(itemEventId) !== "not-delivered") {
+    return false;
+  }
+  deliverItem(item, otherParent(sender));
+  return getDeliveryState(itemEventId) === "delivered";
+}
+
 export function getDeliveryState(itemEventId: string): DeliveryState {
   const events = getEvents();
-  if (events.some((e) => e.type === "read" && e.targetEventId === itemEventId)) {
-    return "read";
+  const tracking = events.filter((e) => e.targetEventId === itemEventId);
+  const latest = tracking.at(-1);
+  if (latest?.type === "read") return "read";
+  if (latest?.type === "delivered") return "delivered";
+  if (latest?.type === "delivery-failed") return "not-delivered";
+
+  const item = events.find((e) => e.id === itemEventId);
+  if (item && !isOnline(otherParent(item.author))) {
+    return "waiting-offline";
   }
-  if (events.some((e) => e.type === "delivery-failed" && e.targetEventId === itemEventId)) {
-    return "not-delivered";
-  }
-  if (events.some((e) => e.type === "delivered" && e.targetEventId === itemEventId)) {
-    return "delivered";
-  }
-  return "pending";
+  return "waiting";
 }
 
 export function _resetDelivery(): void {

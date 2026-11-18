@@ -29,6 +29,18 @@ Mon 16 Nov 2026 09:00.
    it, then switch Jason back online and confirm it arrives with its real written time still
    shown as "device time, not verified" (FR-009, FR-010).
 
+## Verify the V2 revisions
+
+1. Submit offline as Jason. Confirm the card shows "Not sent yet" and the written time, with no
+   Pending status (F-1, F-2).
+2. Reconnect Jason while Melissa is offline. Confirm the item says "Waiting to be delivered
+   (other parent offline)" rather than the failure label (F-4).
+3. Bring Melissa online and view Home. Confirm no read time appears until she opens details (F-3).
+4. Fail a delivery, confirm "Not delivered <time>", then Retry and confirm the failure remains in
+   History while the current delivery state becomes Delivered (F-5).
+5. Reproduce the 50-hour-written, 46-hour-server truck-stop case and confirm both figures appear,
+   with the server figure still official (F-6).
+
 Every scenario in `spec.md`'s "Acceptance Examples (exact values)" section is reproducible this
 way using only the Demo controls panel. None of it requires editing code or data files by hand.
 

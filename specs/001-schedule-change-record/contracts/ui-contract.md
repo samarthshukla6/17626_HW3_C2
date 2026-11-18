@@ -7,7 +7,8 @@ not be written inline in a component.
 ## Screens (REQ-02)
 
 - **Viewing as: Melissa | Jason** switch (A-1) always visible; switching re-renders every
-  other screen as that parent, with no sign-in.
+  other screen as that parent, with no sign-in. The current parent has a persistent pressed
+  style and a visible "Current parent" label (F-7).
 - **Home** (the first screen), from `getHomeSummary(parent)`: the next exchange, every request
   waiting on this parent with its Accept and Decline buttons right there, and every other Pending
   request this parent is involved in. Shows "Nothing is waiting for you." when nothing is waiting.
@@ -28,7 +29,13 @@ not be written inline in a component.
   received by server, delivered or "Not delivered", and read (FR-009). The sender sees Edit
   (time fields only), Withdraw and Add follow-up while Pending. The other parent sees Add dispute
   note on an emergency claim. A request saved offline shows "Saved on this device, not sent yet"
-  on the sender's side only.
+  and its written time on the sender's side only, with "Not sent yet" instead of status. Waiting
+  says the other parent is offline; failure offers Retry to the sender. Read is recorded only
+  after the recipient selects "Open details". Event labels and timestamps use separate lines.
+
+Successful request submission shows "Request submitted" and opens Requests with the new card
+visible (F-8). The alternative datetime control keeps a browser-valid local value until Confirm
+and converts it once when calling the domain (F-10).
 
 ## The two-action respond flow (FR-006)
 
