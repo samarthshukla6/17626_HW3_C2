@@ -138,3 +138,31 @@ in the file layout, not just a convention.
 ## Complexity Tracking
 
 *No Constitution Check violations, table intentionally omitted.*
+
+## V2 revision plan
+
+V2 changes only behavior traced from F-1 to F-10. The event log remains append-only, the server clock remains trusted, and REQ-01 to REQ-14 stay stable.
+
+### Domain changes
+
+- A locally queued item has no server request status and carries its written device time (F-1, F-2, REQ-05, REQ-10).
+- Notice keeps the server-received calculation official and adds written-time context when the figures differ (F-6, REQ-04).
+- Delivery distinguishes waiting for an offline recipient, failed, delivered and read. Retry appends new delivery evidence and keeps the failure event (F-4, F-5, REQ-09, REQ-11).
+- Read is recorded only from an explicit detail-open action, never from rendering Home or Requests (F-3, A-12, REQ-09).
+
+### UI changes
+
+- The selected parent has a persistent pressed style and visible current-parent label (F-7, REQ-02).
+- Successful submission opens Requests and shows a confirmation banner (F-8, REQ-02, REQ-03).
+- Event descriptions and timestamps use separate lines at 375 px (F-9, REQ-09, REQ-13).
+- The decline alternative control stores its raw local input until confirmation, then converts it once (F-10, REQ-06).
+
+### Tests and trade-offs
+
+V2 tests use the exact examples in `spec.md`. Domain tests cover notice context, queued semantics and delivery retry. App tests cover explicit read, selected-parent state, submission feedback, readable timestamps and the alternative control. V1 tests remain as regression coverage, with expected copy changed only where the V2 spec changed it.
+
+V2 provides explicit retry, not production background retry scheduling. Push notifications, retry limits and network backoff need real infrastructure and remain outside this prototype. Q-3 stays open: V2 displays both figures but does not make unverified phone time authoritative.
+
+### Consistency analysis
+
+The V2 spec, plan, data model, contracts and Phase 10 tasks cover every changed requirement and finding. No Constitution conflict, uncovered V2 requirement, or unowned task remains. The Spec Kit prerequisite check passes when `SPECIFY_FEATURE_DIRECTORY` points to this feature. This older checkout has no `.specify/feature.json`, so the explicit directory is required. No HIGH or CRITICAL inconsistency remains.

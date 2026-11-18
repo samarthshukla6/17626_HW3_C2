@@ -60,7 +60,8 @@ its `create` event, plus the current server time (for overdue/lapsed derivation)
 | `affectedScheduleEntryId`, `proposer`, `reason`, `emergencyTag?` | From the `create` event; fixed for the request's lifetime (FR-011). |
 | `responder` | The other parent (FR-006: a parent cannot respond to their own request). |
 | `proposedTime`, `alternativeTime?` | From the `create` event, overridden by the latest `edit` event if one exists (FR-011). |
-| `noticeLabel` | Computed once from the `create` event's `serverTime` vs. the affected entry's `startDateTime` (FR-004); never recomputed by a later `edit` (Key Entities). |
+| `noticeLabel` | Official figure computed once from the `create` event's `serverTime` vs. the affected entry's `startDateTime` (FR-004); never recomputed by a later `edit`. |
+| `writtenNoticeContext?` | When written and server notice differ, the written figure labelled "device time, not verified" (F-6). It never changes the official threshold result. |
 | `status` | See state machine below. |
 | `linkedFromRequestId?` / `linkedAlternativeRequestId?` | Set when this request is the product of, or produced, a decline-with-alternative (Clarifications). |
 | `overdue` | Derived flag (not a status): true while `status` is Pending and either 48h have passed since `serverTime` of `create`, or the affected entry's `startDateTime` is under 24h away (FR-008, working assumption A-4). |
@@ -84,6 +85,10 @@ shown above changes it. A new `create` event is rejected outright (not a status 
 its affected entry already has a request in Pending status (Clarifications/A-9) see Domain
 API's `createRequest` contract.
 
+A local queued item is not yet a Change Request held by the server and has no status. Its UI view
+contains the intended request fields and written device time, with `queuedLocally = true` and
+"Not sent yet" in place of status (A-14). It becomes a normal Pending request only after flush.
+
 ## Follow-up / Dispute Note (derived view)
 
 Each is simply the set of `follow-up` (linked to any request) or `dispute-note` (linked to an
@@ -92,9 +97,18 @@ emergency-tagged request) events for a `requestId`, in order, each carrying its 
 
 ## Notice Label (derived)
 
-A string, computed once per request: `"<N> h notice given"` if N ≥ 48, else
-`"Short notice: <N> h given (plan asks for 48 h)"`, where N = whole hours, rounded down, between
-the `create` event's `serverTime` and the affected entry's `startDateTime` (FR-004, A-3).
+The official string is `"<N> h notice at server"` if N ≥ 48, else
+`"Short notice: <N> h at server (plan asks for 48 h)"`, where N is based on server receipt. When
+the written figure M differs, the view also contains `"written <M> h before (device time, not
+verified)"` (FR-004, F-6). N remains the threshold value.
+
+## Delivery state (derived)
+
+For each item event, delivery state is waiting, failed, delivered or read. Waiting means no
+delivery event exists yet and identifies whether the recipient is offline. Failed means the
+latest attempt recorded `delivery-failed`. A later successful retry appends `delivered` and makes
+the current state delivered while the failure remains in History. Read requires delivered and an
+explicit detail-open action (A-12, A-13, A-15).
 
 ## Clocks & Connectivity (simulated hardware state, not part of the case record)
 
