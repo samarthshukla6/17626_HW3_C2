@@ -1,7 +1,7 @@
 # Requirements Wording Checklist: Schedule Change & Trusted Record
 
-**Purpose**: Unit-test the wording of `spec.md` itself — completeness, clarity, consistency,
-measurability, and coverage — not the behavior of any implementation.
+**Purpose**: Unit-test the wording of `spec.md` itself (completeness, clarity, consistency,
+measurability, and coverage), not the behaviour of any implementation.
 **Created**: 2026-11-16
 **Feature**: [spec.md](../spec.md)
 
@@ -20,10 +20,10 @@ quality. It does not mean implementation work is complete.
   stated condition with no failure path for the other four states? [Gap, Spec §FR-005]
   → Resolved: FR-005 now says Withdraw is only offered while Pending.
 - [x] CHK002 Is the failure message for a missing reason on an emergency-tagged request
-  specified, or does FR-014 rely on FR-003's generic "name the missing field" behavior without
+  specified, or does FR-014 rely on FR-003's generic "name the missing field" behaviour without
   saying so explicitly? [Gap, Spec §FR-003, §FR-014]
   → Resolved: FR-014 points to FR-003's "Add a reason for the change".
-- [x] CHK003 Is the system's behavior specified for a saved offline item that still cannot be
+- [x] CHK003 Is the system's behaviour specified for a saved offline item that still cannot be
   sent once connectivity returns (e.g., the server itself is unreachable), or does FR-010 only
   cover the happy path of a successful resend? [Gap, Spec §FR-010]
   → Resolved: FR-010 keeps a failed resend saved and retries on the next connection.
@@ -75,7 +75,7 @@ quality. It does not mean implementation work is complete.
   §SC-001]
   → Resolved: FR-006 defines the two actions for accept and decline; adding an alternative is an extra step.
 - [x] CHK014 Are the wording rules in FR-012 (no judging words, no counts/scores) stated as
-  applying to every status, label, and message across FR-001–FR-014 equally, or could a reader
+  applying to every status, label, and message across FR-001 to FR-014 equally, or could a reader
   infer they apply only to request-outcome wording and not, for example, to delivery-failure or
   overdue messages? [Consistency, Spec §FR-012]
   → Resolved: FR-012 now applies to every label, status and message.
@@ -90,9 +90,9 @@ quality. It does not mean implementation work is complete.
   enough to be checked the same way by two different reviewers, or does it still require a
   judgment call? [Measurability, Spec §SC-007]
   → Resolved: SC-007 now says the page is no wider than the viewport and every control is fully visible.
-- [x] CHK017 Does every Functional Requirement (FR-001–FR-014) carry its REQ ID in the form
+- [x] CHK017 Does every Functional Requirement (FR-001 to FR-014) carry its REQ ID in the form
   "(REQ-nn)" so that FR-0nn and REQ-nn can be matched automatically, with no exceptions? [Spec
-  §FR-001–FR-014, Traceability]
+  §FR-001 to FR-014, Traceability]
   → Checked: all 14 FRs carry their REQ ID.
 
 ## Scenario Coverage
@@ -115,7 +115,7 @@ quality. It does not mean implementation work is complete.
 
 - [x] CHK021 Is the outcome specified when the sending parent tries to edit a Pending request's
   reason or affected event (fields FR-011 says are fixed), beyond simply stating those fields are
-  fixed — e.g., is an edit attempt on a fixed field rejected, ignored, or is the control simply
+  fixed? For example, is an edit attempt on a fixed field rejected, ignored, or is the control simply
   never offered? [Gap, Spec §FR-011]
   → Resolved: FR-011 says no edit control is offered for fixed fields.
 - [x] CHK022 Is the outcome specified for an emergency-tagged request that later also becomes
@@ -141,7 +141,7 @@ quality. It does not mean implementation work is complete.
 ## Ambiguities & Conflicts
 
 - [x] CHK025 Are Q-1 through Q-4 each linked to exactly one Functional Requirement so a reader
-  cannot mistake which requirement's behavior is still provisional, given Q-1 and Q-3 both
+  cannot mistake which requirement's behaviour is still provisional, given Q-1 and Q-3 both
   attach to FR-004? [Spec §FR-004, §FR-008, §FR-014, Assumptions]
   → Checked: Q-1 (is short notice allowed) and Q-3 (how notice is measured) are different questions that both affect FR-004, and the spec labels each one separately.
 

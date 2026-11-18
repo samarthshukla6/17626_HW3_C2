@@ -8,7 +8,7 @@
 
 ## Summary
 
-Build FR-001–FR-014 as a frontend-only prototype (Vite + React + TypeScript) deployed as a
+Build FR-001 to FR-014 as a frontend-only prototype (Vite + React + TypeScript) deployed as a
 static site on Vercel. A framework-free domain layer (event log, simulated server clock,
 per-parent device clock and offline queue, notice/status/overdue derivation) is the only place
 business rules live; every UI view is a read derived from that append-only event log. State
@@ -57,14 +57,14 @@ Not multi-tenant, not multi-case.
 
 | Principle | Check | Result |
 |---|---|---|
-| I. Spec-Bounded Scope | Plan covers exactly FR-001–FR-014 / NFR-01–03; no screen or capability beyond them (Demo Controls is explicitly labelled as a testing aid, not a product feature) | PASS |
+| I. Spec-Bounded Scope | Plan covers exactly FR-001 to FR-014 / NFR-01 to 03; no screen or capability beyond them (Demo Controls is explicitly labelled as a testing aid, not a product feature) | PASS |
 | II. Traceability | Vitest `describe` blocks are one per REQ ID; domain modules and UI components are named after the FR/REQ they serve | PASS |
 | III. Append-Only Case Record | Domain layer is event-sourced: the event log is the only persisted record of actions, append-only by construction, with author + simulated-server time on every event | PASS |
 | IV. Mutual Acceptance Only | Status is a pure derivation from events; "Agreed" only derives from an explicit `accept` event, never from clock advancement or any other event type | PASS |
 | V. Neutral, Equal Treatment | All system-facing text routed through one `copy/strings` module so FR-012's closed word list (SC-005) is mechanically checkable; both parents render through the same components with no parent-specific branching in wording | PASS |
 | VI. Tested, Separated Domain Logic | Domain layer (`src/domain/`) has zero React imports; UI (`src/app/`) only calls domain functions and renders their derived results | PASS |
 | VII. Prototype Simplicity | Mock data (A-6) seeded at reset; no backend; no real auth (A-1's "Viewing as" switch); two-action respond flow (FR-006); 375px mobile-first | PASS |
-| VIII. Phased Review | Q-1–Q-4 remain `[NEEDS CLARIFICATION]` in spec.md and are deliberately not resolved here; the plan builds against the documented working assumptions A-3/A-4 instead, per the Development Workflow section | PASS (proceeding on assumptions, not guesses) |
+| VIII. Phased Review | Q-1 to Q-4 remain `[NEEDS CLARIFICATION]` in spec.md and are deliberately not resolved here; the plan builds against the documented working assumptions A-3/A-4 instead, per the Development Workflow section | PASS (proceeding on assumptions, not guesses) |
 
 No violations. Complexity Tracking table is omitted below as a result.
 
@@ -105,19 +105,18 @@ frontend/
 │   │   ├── delivery.ts          # delivered / read / delivery-failed events (REQ-09)
 │   │   ├── requests.ts          # create/edit/withdraw/respond, status + notice + overdue
 │   │   │                        # derivation (REQ-03, 04, 05, 06, 08, 14)
-│   │   ├── record.ts            # Home, Schedule, History and event-detail views (REQ-01, 02, 07, 13)
+│   │   ├── record.ts            # data for the next exchange, calendar, exchange history and History (REQ-01, 02, 07, 13)
 │   │   ├── mockData.ts          # A-6 seed schedule and starting clock
 │   │   └── store.ts             # localStorage load/save/reset (NFR-02, A-2)
 │   ├── copy/
 │   │   └── strings.ts           # every system-facing string; backs FR-012 / SC-005
 │   └── app/                     # React UI, calls domain/, never reimplements rules
-│       ├── App.tsx
+│       ├── App.tsx              # the one screen: next exchange and all panels (REQ-02, F-15)
 │       ├── ViewingAsSwitch.tsx  # A-1
-│       ├── Home.tsx             # first screen / summary (REQ-02)
-│       ├── Schedule.tsx         # REQ-01, REQ-02
+│       ├── CustodyCalendar.tsx  # Schedule panel; exchange days open an exchange (REQ-01, F-15)
+│       ├── ExchangePanel.tsx    # chosen exchange, its history, request form (REQ-03, 07, 13)
 │       ├── Requests.tsx         # REQ-02, REQ-05, REQ-06
-│       ├── History.tsx         # REQ-02, REQ-13
-│       ├── EventDetail.tsx      # REQ-13
+│       ├── History.tsx          # REQ-02, REQ-11
 │       ├── RequestCard.tsx      # shared request card (REQ-05, 06, 08, 09, 10, 11, 14)
 │       └── DemoControls.tsx     # labelled testing aid, not part of the product
 └── tests/
@@ -141,7 +140,7 @@ in the file layout, not just a convention.
 
 ## V2 revision plan
 
-V2 changes only behavior traced from F-1 to F-10. The event log remains append-only, the server clock remains trusted, and REQ-01 to REQ-14 stay stable.
+V2 changes only behaviour traced from F-1 to F-10, plus the later one-screen change F-15 described below. The event log remains append-only, the server clock remains trusted, and REQ-01 to REQ-14 stay stable.
 
 ### Domain changes
 
@@ -162,6 +161,10 @@ V2 changes only behavior traced from F-1 to F-10. The event log remains append-o
 V2 tests use the exact examples in `spec.md`. Domain tests cover notice context, queued semantics and delivery retry. App tests cover explicit read, selected-parent state, submission feedback, readable timestamps and the alternative control. V1 tests remain as regression coverage, with expected copy changed only where the V2 spec changed it.
 
 V2 provides explicit retry, not production background retry scheduling. Push notifications, retry limits and network backoff need real infrastructure and remain outside this prototype. Q-3 stays open: V2 displays both figures but does not make unverified phone time authoritative.
+
+### One-screen update (F-15)
+
+After V2 was deployed, review showed that four separate areas made a parent hunt for things, and the spec asked for exactly that. FR-002 and FR-003 were revised first. The plan change is UI only: `App.tsx` composes the next exchange, the Schedule calendar, the selected exchange, Requests and History on one screen, with no client-side navigation. `Home.tsx`, `Schedule.tsx` and `EventDetail.tsx` were replaced by `CustodyCalendar.tsx` and `ExchangePanel.tsx`, which call the same `record.ts` functions (`getSchedule`, `getHomeSummary`, `getEventTimeline`). No domain rule changed. On screens 1024 px and wider the page is fixed and long panels scroll inside themselves; below that the panels stack (NFR-01). Tracked as T088.
 
 ### Consistency analysis
 

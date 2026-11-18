@@ -37,7 +37,7 @@
   `docs/goal-model.md` §6 open questions and the two assumptions (A-3, A-4) the goal model flags
   as the riskiest in the whole sprint. They are not blocking defects in the spec; they are the
   open risks the prototype (per `docs/goal-model.md` §2) exists to surface. Do not resolve them
-  in `/speckit-clarify` by guessing — they need real stakeholder input (Melissa, Jason, Ruth, or
+  in `/speckit-clarify` by guessing; they need real stakeholder input (Melissa, Jason, Ruth, or
   the court order itself). `/speckit-plan` and `/speckit-tasks` can proceed by building to the
   documented working assumptions (A-3, A-4) while keeping the markers visible in the spec.
 - `/speckit-clarify` session (2026-11-16) resolved three other gaps: concurrent Pending requests
