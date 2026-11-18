@@ -5,6 +5,7 @@ import { getServerTime } from "../domain/clock";
 import { strings } from "../copy/strings";
 import type { Parent } from "../domain/types";
 import { Avatar } from "./ui/Avatar";
+import { formatDateOnly } from "../domain/format";
 
 const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 const WEEKDAYS = ["M", "T", "W", "T", "F", "S", "S"];
@@ -18,13 +19,19 @@ function dayKey(d: Date): string {
  * court plan and agreed changes (REQ-01, REQ-07). It shows the schedule, not
  * anything about either parent's behaviour, so it stays within FR-012.
  */
-export function CustodyCalendar(): React.ReactElement {
+interface CustodyCalendarProps {
+  selectedId?: string;
+  onSelect?: (entryId: string) => void;
+}
+
+export function CustodyCalendar({ selectedId, onSelect }: CustodyCalendarProps): React.ReactElement {
   const now = getServerTime();
   const [month, setMonth] = useState(() => new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1)));
   const rows = getSchedule();
   const entries = [...rows].sort((a, b) => a.entry.startDateTime.localeCompare(b.entry.startDateTime));
 
   const exchangeDays = new Set(entries.map((r) => dayKey(new Date(r.entry.startDateTime))));
+  const entryByDay = new Map(entries.map((r) => [dayKey(new Date(r.entry.startDateTime)), r.entry.id]));
   const pendingDays = new Set(entries.filter((r) => r.pendingLabel).map((r) => dayKey(new Date(r.entry.startDateTime))));
   const agreedDays = new Set(
     entries.filter((r) => r.agreedChange).map((r) => dayKey(new Date(r.agreedChange!.request.proposedTime))),
@@ -67,7 +74,7 @@ export function CustodyCalendar(): React.ReactElement {
           <ChevronRight size={16} />
         </button>
       </div>
-      <div className="calendar__grid" role="grid" aria-label={strings.calendarTitle()}>
+      <div className="calendar__grid">
         {WEEKDAYS.map((w, i) => (
           <span key={`h${i}`} className="calendar__weekday">{w}</span>
         ))}
@@ -85,8 +92,25 @@ export function CustodyCalendar(): React.ReactElement {
             pendingDays.has(key) ? "calendar__day--pending" : "",
             agreedDays.has(key) ? "calendar__day--agreed" : "",
           ].join(" ");
+          const entryId = entryByDay.get(key);
+          if (entryId && onSelect) {
+            // An exchange day is a button: choosing it opens that exchange in the
+            // panel next to the calendar, on the same screen (FR-002, F-15).
+            return (
+              <button
+                key={key}
+                type="button"
+                aria-label={`Open ${formatDateOnly(day)}`}
+                aria-pressed={entryId === selectedId}
+                className={`${classes} calendar__day--button${entryId === selectedId ? " calendar__day--selected" : ""}`}
+                onClick={() => onSelect(entryId)}
+              >
+                {day.getUTCDate()}
+              </button>
+            );
+          }
           return (
-            <span key={key} className={classes} role="gridcell">
+            <span key={key} className={classes}>
               {day.getUTCDate()}
             </span>
           );

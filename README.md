@@ -26,7 +26,7 @@ Supporting documents:
 
 ## Using the prototypes
 
-Both prototypes run in the browser with mock data and no login. Use "Viewing as" at the top to act as Melissa or Jason. The "Demo controls" button at the bottom is a testing aid, not part of the product: it moves the server clock, skews Jason's phone clock, takes either parent offline, fails the next delivery, or resets the data. A good way to compare the versions is the truck-stop case: set the server time to Wed 18 Nov 16:00, take Jason offline, send a request for Fri 20 Nov as Jason, advance the clock 4 hours and bring him back online.
+Both prototypes run in the browser with mock data and no login. Use "Viewing as" at the top to act as Melissa or Jason. V2 puts everything on one screen: pick a marked day on the calendar to see that exchange, its history and the "Request a change" form, and answer requests in the Requests panel on the right. The "Demo controls" button is a testing aid, not part of the product: it moves the server clock, skews Jason's phone clock, takes either parent offline, fails the next delivery, or resets the data. A good way to compare the versions is the truck-stop case: set the server time to Wed 18 Nov 16:00, take Jason offline, send a request for Fri 20 Nov as Jason, advance the clock 4 hours and bring him back online.
 
 ## What changed from V1 to V2
 
@@ -38,7 +38,8 @@ We changed the goal model and the spec first, then the plan, tasks and code. Det
 - Unsent requests (F-1, F-2): an item still on the sender's phone shows "Not sent yet" and its written time, with no status.
 - Usability (F-7 to F-10): the current parent is highlighted, a submitted request is confirmed, times sit on separate lines, and declining with an alternative works.
 - Fixes found while verifying V2 (F-11 to F-14): requests sent to an offline parent are delivered when they reconnect, delivered and read times are both shown, the confirmation only appears for the parent who submitted, and History uses readable labels.
-- Visual redesign (presentation only): V2 is a dashboard with a sidebar, illustrated avatars, a custody calendar, a notice gauge and delivery steps. It doesn't change any requirement or behaviour, and the calendar deliberately shows only the schedule, never counts or scores of either parent (FR-012).
+- Visual redesign (presentation only): illustrated avatars, a custody calendar, a notice gauge and delivery steps. The calendar shows only the schedule, never counts or scores of either parent (FR-012).
+- One screen (F-15): reviewing the deployed V2 showed that switching between four areas made a parent hunt for things. We changed FR-002 and FR-003 first, then put the next exchange, the clickable calendar, the chosen exchange with its history and request form, Requests and History on one screen with no navigation. On a laptop the page doesn't scroll; on a phone the panels stack.
 
 ## Run locally
 
@@ -57,7 +58,7 @@ npm run dev
 ├── specs/001-schedule-change-record/
 │   ├── spec.md            # Spec Kit feature spec (FR-001 to FR-014) and revision history
 │   ├── plan.md, research.md, data-model.md, contracts/, quickstart.md
-│   ├── tasks.md           # Tasks T001 to T086, each tagged with its REQ or finding
+│   ├── tasks.md           # Tasks T001 to T088, each tagged with its REQ or finding
 │   └── checklists/        # Requirements-quality checklists
 ├── .specify/              # Spec Kit config and project constitution
 ├── docs/

@@ -81,3 +81,4 @@ Sources: `S-` = Samarth's interviews (`S-M1`/`S-M2` Melissa, `S-J1`/`S-J2` Jason
 | E-73 | S-J2:20 | Jason | “keep the original schedule visible instead of making the request look like I missed my weekend” |
 | E-74 | S-M1:58 | Melissa | “A change is only something I treat as real once the other parent clearly agrees in writing” |
 | E-75 | K-R:12 | Ruth | “display any edit or deletion as a visible event in a permanent audit trail, with reliable timestamps” |
+| E-76 | S-R1:79 | Ruth | “I'd want upcoming exchanges, recent changes, unresolved expenses, and the related messages visible together” |

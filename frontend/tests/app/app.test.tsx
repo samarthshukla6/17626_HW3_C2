@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { App, _resetAppSeed } from "../../src/app/App";
 import { _resetLog } from "../../src/domain/events";
@@ -30,10 +30,8 @@ describe("T062: event-detail buttons are labelled with the exchange date, not it
     _resetAppSeed();
   });
 
-  it('labels the first entry\'s button "Open Fri 20 Nov", not its internal id', async () => {
-    const user = userEvent.setup();
+  it('labels the first entry\'s button "Open Fri 20 Nov", not its internal id', () => {
     render(<App />);
-    await user.click(screen.getByRole("button", { name: "Schedule" }));
 
     expect(screen.getByRole("button", { name: "Open Fri 20 Nov" })).toBeInTheDocument();
     expect(screen.queryByText(/weekend-1-pickup/)).not.toBeInTheDocument();
@@ -58,11 +56,10 @@ describe("V2 selected parent and request submission feedback", () => {
     expect(screen.getByRole("button", { name: "Jason" })).toHaveAttribute("aria-pressed", "true");
   });
 
-  it("opens Requests and confirms a successful submission", async () => {
+  it("confirms a successful submission and shows the request in the Requests panel", async () => {
     const user = userEvent.setup();
     render(<App />);
     await user.click(screen.getByRole("button", { name: "Jason" }));
-    await user.click(screen.getByRole("button", { name: "Schedule" }));
     const requestButtons = screen.getAllByRole("button", { name: "Request a change" });
     await user.click(requestButtons[0]);
     const proposed = screen.getByLabelText("Proposed date and time") as HTMLInputElement;
@@ -73,6 +70,41 @@ describe("V2 selected parent and request submission feedback", () => {
     expect(submit).not.toBeNull();
     await user.click(submit!);
     expect(screen.getByText("Request submitted")).toBeInTheDocument();
+    const requestsPanel = screen.getByRole("region", { name: "Requests" });
+    expect(within(requestsPanel).getByText(/Dispatch changed my route/)).toBeInTheDocument();
+  });
+});
+
+describe("F-15: everything on one screen, no navigation", () => {
+  beforeEach(() => {
+    localStorage.clear();
+    _resetLog();
+    _resetOfflineQueue();
+    _resetScheduleEntries();
+    _resetAppSeed();
+  });
+
+  it("shows the Schedule, Requests and History panels together, with no navigation", () => {
+    render(<App />);
+    expect(screen.getByRole("heading", { name: "Schedule" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Requests" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "History" })).toBeInTheDocument();
+    expect(screen.queryByRole("navigation")).not.toBeInTheDocument();
+    expect(screen.getByText("Nothing is waiting for you.")).toBeInTheDocument();
+  });
+
+  it("opens the next exchange by default and another one when Jason picks it on the calendar", async () => {
+    const user = userEvent.setup();
+    render(<App />);
+    await user.click(screen.getByRole("button", { name: "Jason" }));
+    const exchange = screen.getByRole("region", { name: "Selected exchange" });
+    expect(within(exchange).getByText("Fri 20 Nov 18:00, Jason's weekend (court plan)")).toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "Open Sun 22 Nov" }));
+    expect(screen.getByRole("button", { name: "Open Sun 22 Nov" })).toHaveAttribute("aria-pressed", "true");
+    expect(within(exchange).getByText("Sun 22 Nov 18:00, drop-off, Melissa's time begins (court plan)")).toBeInTheDocument();
+    expect(within(exchange).getByRole("button", { name: "Request a change" })).toBeInTheDocument();
+    expect(screen.getByRole("region", { name: "Requests" })).toBeInTheDocument();
+    expect(screen.getByRole("region", { name: "History" })).toBeInTheDocument();
   });
 });

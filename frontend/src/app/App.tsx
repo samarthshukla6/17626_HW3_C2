@@ -1,41 +1,40 @@
 import { useState } from "react";
-import { buildMockSchedule } from "../domain/mockData";
-import { setScheduleEntries, getScheduleEntries } from "../domain/schedule";
-import { loadState, resetDemoData, STORAGE_KEY } from "../domain/store";
-import type { Parent } from "../domain/types";
-import { ViewingAsSwitch } from "./ViewingAsSwitch";
-import { Home } from "./Home";
-import { Schedule } from "./Schedule";
-import { Requests } from "./Requests";
-import { History } from "./History";
-import { EventDetail } from "./EventDetail";
-import { DemoControls } from "./DemoControls";
-import { formatDateOnly, formatDateTime } from "../domain/format";
-import { getServerTime } from "../domain/clock";
-import { isOnline } from "../domain/offlineQueue";
 import {
-  CalendarRange,
+  CalendarDays,
   CheckCircle2,
   Clock3,
   Inbox,
-  LayoutDashboard,
+  MapPin,
   ScrollText,
   SlidersHorizontal,
   Wifi,
   WifiOff,
   X,
 } from "lucide-react";
+import { buildMockSchedule } from "../domain/mockData";
+import { setScheduleEntries, getScheduleEntries } from "../domain/schedule";
+import { loadState, resetDemoData, STORAGE_KEY } from "../domain/store";
+import { getHomeSummary } from "../domain/record";
+import { formatDateTime } from "../domain/format";
+import { getServerTime } from "../domain/clock";
+import { isOnline } from "../domain/offlineQueue";
 import type { ChangeRequestView } from "../domain/requests";
+import type { Parent } from "../domain/types";
 import { strings } from "../copy/strings";
-
-type View = "home" | "schedule" | "requests" | "history" | "eventDetail";
+import { ViewingAsSwitch } from "./ViewingAsSwitch";
+import { CustodyCalendar } from "./CustodyCalendar";
+import { ExchangePanel } from "./ExchangePanel";
+import { Requests } from "./Requests";
+import { History } from "./History";
+import { DemoControls } from "./DemoControls";
+import { Avatar } from "./ui/Avatar";
 
 /**
  * T059: seeds the schedule and loads (or creates) persisted state
  * synchronously, as part of the render call itself - not in a useEffect,
  * which only runs after the first render has already committed. Calling
  * this from the component body, guarded so it only runs once, means the
- * very first render already sees real data (e.g. Home's "Next exchange").
+ * very first render already sees real data (e.g. "Next exchange").
  */
 let seeded = false;
 function ensureSeeded(): void {
@@ -57,41 +56,41 @@ export function _resetAppSeed(): void {
 }
 
 /**
- * One page, no client-side routes (plan.md). Mobile-first, usable at 375px
- * (NFR-01, SC-007). The Demo Controls panel is reached only from the footer
- * button, kept visually and structurally separate from the product screens.
+ * FR-002 (F-15): one screen, no navigation. The next exchange, the Schedule
+ * calendar, the selected exchange with its history and request form, the
+ * Requests list and the full History are all visible together. On a desktop
+ * the page itself never scrolls; long panels scroll inside themselves. Below
+ * 1024px the panels stack (NFR-01, usable at 375px). Demo Controls stay in a
+ * separate drawer, apart from the product.
  */
 export function App(): React.ReactElement {
   ensureSeeded();
 
   const [viewer, setViewer] = useState<Parent>("Melissa");
-  const [view, setView] = useState<View>("home");
-  const [selectedEntryId, setSelectedEntryId] = useState<string | undefined>(undefined);
+  const [selectedId, setSelectedId] = useState<string | undefined>(undefined);
+  const [highlightId, setHighlightId] = useState<string | undefined>(undefined);
   const [showDemoControls, setShowDemoControls] = useState(false);
   // T085 (REQ-02, REQ-03, F-13): the confirmation belongs to the parent who
-  // submitted, and is cleared when the viewer changes or they navigate away.
+  // submitted, and is cleared when the viewer changes or they pick another
+  // exchange.
   const [submissionMessage, setSubmissionMessage] = useState<
     { text: string; author: Parent } | undefined
   >(undefined);
-
-  function changeViewer(parent: Parent): void {
-    setSubmissionMessage(undefined);
-    setViewer(parent);
-  }
-
-  function navigate(next: View): void {
-    setSubmissionMessage(undefined);
-    setView(next);
-  }
   const [, setRefreshToken] = useState(0);
 
   function onChanged(): void {
     setRefreshToken((n) => n + 1);
   }
 
-  function openEvent(entryId: string): void {
-    setSelectedEntryId(entryId);
-    setView("eventDetail");
+  function changeViewer(parent: Parent): void {
+    setSubmissionMessage(undefined);
+    setHighlightId(undefined);
+    setViewer(parent);
+  }
+
+  function selectExchange(entryId: string): void {
+    setSubmissionMessage(undefined);
+    setSelectedId(entryId);
   }
 
   function handleRequestCreated(request: ChangeRequestView): void {
@@ -99,23 +98,30 @@ export function App(): React.ReactElement {
       text: request.savedOnDeviceWrittenTime ? strings.savedOnDeviceNotSentYet() : strings.requestSubmitted(),
       author: request.proposer,
     });
-    setView("requests");
+    setHighlightId(request.id);
+    onChanged();
   }
 
-  const nav: { id: View; label: string; icon: React.ReactElement }[] = [
-    { id: "home", label: "Home", icon: <LayoutDashboard size={18} /> },
-    { id: "schedule", label: "Schedule", icon: <CalendarRange size={18} /> },
-    { id: "requests", label: "Requests", icon: <Inbox size={18} /> },
-    { id: "history", label: "History", icon: <ScrollText size={18} /> },
-  ];
+  const summary = getHomeSummary(viewer);
+  const next = summary.nextExchange;
+  const entries = [...getScheduleEntries()].sort((a, b) => a.startDateTime.localeCompare(b.startDateTime));
+  const activeId = selectedId ?? next?.id ?? entries[0]?.id;
+  const upcoming = next ? entries.filter((e) => e.startDateTime > next.startDateTime).slice(0, 3) : [];
   const online = isOnline(viewer);
+
+  let countdown = "";
+  if (next) {
+    const ms = new Date(next.startDateTime).getTime() - getServerTime().getTime();
+    const totalHours = Math.max(0, Math.floor(ms / 3600000));
+    countdown = strings.timeUntil(Math.floor(totalHours / 24), totalHours % 24);
+  }
 
   return (
     <div className="shell">
-      <aside className="sidebar">
+      <header className="topbar">
         <div className="brand">
           <span className="brand__mark" aria-hidden="true">
-            <svg viewBox="0 0 32 32" width="30" height="30">
+            <svg viewBox="0 0 32 32" width="26" height="26">
               <circle cx="12" cy="13" r="6" />
               <circle cx="21" cy="13" r="6" />
               <path d="M5 27c1.5-5 5-7 7-7s3.2.8 4 2c.8-1.2 2-2 4-2s5.5 2 7 7" />
@@ -129,80 +135,122 @@ export function App(): React.ReactElement {
 
         <ViewingAsSwitch viewer={viewer} onChange={changeViewer} />
 
-        <nav aria-label="Main navigation" className="nav">
-          {nav.map((item) => (
-            <button
-              key={item.id}
-              type="button"
-              className={`nav__item${view === item.id || (item.id === "schedule" && view === "eventDetail") ? " nav__item--active" : ""}`}
-              onClick={() => navigate(item.id)}
-            >
-              {item.icon}
-              {item.label}
-            </button>
-          ))}
-        </nav>
-
-        <footer className="sidebar__footer">
+        <div className="topbar__chips">
+          <span className="chip">
+            <Clock3 size={14} /> {strings.serverTimeChip(formatDateTime(getServerTime().toISOString()))}
+          </span>
+          <span className={`chip ${online ? "chip--ok" : "chip--off"}`}>
+            {online ? <Wifi size={14} /> : <WifiOff size={14} />} {strings.connectionChip(online)}
+          </span>
           <button type="button" className="demo-toggle" onClick={() => setShowDemoControls((v) => !v)}>
-            <SlidersHorizontal size={16} />
-            Demo controls
+            <SlidersHorizontal size={15} /> {strings.demoControlsButton()}
           </button>
-        </footer>
-      </aside>
+        </div>
+      </header>
 
-      <main className="main">
-        <header className="topbar">
-          <div className="topbar__titles">
-            <p className="topbar__eyebrow">{strings.greeting(viewer)}</p>
-            <p className="topbar__title">{strings.viewTitle(view)}</p>
-          </div>
-          <div className="topbar__chips">
-            <span className="chip"><Clock3 size={14} /> {strings.serverTimeChip(formatDateTime(getServerTime().toISOString()))}</span>
-            <span className={`chip ${online ? "chip--ok" : "chip--off"}`}>
-              {online ? <Wifi size={14} /> : <WifiOff size={14} />} {strings.connectionChip(online)}
-            </span>
-          </div>
-        </header>
+      {submissionMessage && submissionMessage.author === viewer ? (
+        <p role="status" className="toast">
+          <CheckCircle2 size={16} /> {submissionMessage.text}
+          <button
+            type="button"
+            className="icon-button toast__close"
+            aria-label="Dismiss"
+            onClick={() => setSubmissionMessage(undefined)}
+          >
+            <X size={14} />
+          </button>
+        </p>
+      ) : null}
 
-        {submissionMessage && submissionMessage.author === viewer ? (
-          <p role="status" className="submission-message">
-            <CheckCircle2 size={16} /> {submissionMessage.text}
-          </p>
-        ) : null}
-
-        <div className="content">
-          {view === "home" && <Home viewer={viewer} />}
-          {view === "schedule" && (
-            <div className="schedule-view">
-              <Schedule viewer={viewer} onRequestCreated={handleRequestCreated} />
-              <div className="history-chips">
-                <p className="card__subtitle">{strings.openHistoryFor()}</p>
-                <div className="history-chips__list">
-                  {getScheduleEntries().map((entry) => (
-                    <button key={entry.id} type="button" className="chip-button" onClick={() => openEvent(entry.id)}>
-                      Open {formatDateOnly(entry.startDateTime)}
-                    </button>
-                  ))}
+      <main className="dashboard">
+        <section className="card card--hero" aria-label={strings.nextExchangeTitle()}>
+          {next ? (
+            <div className="hero">
+              <Avatar parent={next.whoseTimeBegins} size={64} className="hero__avatar" />
+              <div className="hero__body">
+                <p className="hero__eyebrow">
+                  {strings.greeting(viewer)} · {strings.nextExchangeTitle()}
+                </p>
+                <p className="hero__line">
+                  {strings.nextExchange(formatDateTime(next.startDateTime), next.location, next.whoseTimeBegins, next.kind)}
+                </p>
+                <div className="hero__chips">
+                  <span className="chip chip--accent"><Clock3 size={14} /> {countdown}</span>
+                  <span className="chip"><MapPin size={14} /> {next.location}</span>
                 </div>
               </div>
+              {upcoming.length > 0 ? (
+                <ol className="upcoming">
+                  {upcoming.map((entry) => (
+                    <li key={entry.id}>
+                      <button
+                        type="button"
+                        className={`upcoming__item${entry.id === activeId ? " upcoming__item--active" : ""}`}
+                        onClick={() => selectExchange(entry.id)}
+                      >
+                        <Avatar parent={entry.whoseTimeBegins} size={22} />
+                        {formatDateTime(entry.startDateTime)}
+                      </button>
+                    </li>
+                  ))}
+                </ol>
+              ) : null}
             </div>
-          )}
-          {view === "requests" && <Requests viewer={viewer} />}
-          {view === "history" && <History />}
-          {view === "eventDetail" && selectedEntryId && (
-            <EventDetail
-              scheduleEntryId={selectedEntryId}
-              viewer={viewer}
-              onRequestCreated={handleRequestCreated}
-            />
-          )}
-        </div>
+          ) : null}
+        </section>
+
+        <section className="card card--requests" aria-labelledby="requests-title">
+          <h2 id="requests-title" className="card__title">
+            <Inbox size={18} /> {strings.requestsTitle()}
+            {summary.waitingOnYou.length > 0 ? <span className="badge">{summary.waitingOnYou.length}</span> : null}
+          </h2>
+          <div className="card__body">
+            <Requests viewer={viewer} highlightId={highlightId} onChanged={onChanged} />
+          </div>
+        </section>
+
+        <section className="card card--calendar" aria-labelledby="schedule-title">
+          <h2 id="schedule-title" className="card__title">
+            <CalendarDays size={18} /> {strings.scheduleTitle()}
+          </h2>
+          <p className="card__hint">{strings.calendarHint()}</p>
+          <CustodyCalendar selectedId={activeId} onSelect={selectExchange} />
+        </section>
+
+        <section className="card card--exchange" aria-labelledby="exchange-title">
+          <h2 id="exchange-title" className="card__title">
+            <CalendarDays size={18} /> {strings.selectedExchangeTitle()}
+          </h2>
+          <div className="card__body">
+            {activeId ? (
+              <ExchangePanel
+                key={`${viewer}-${activeId}`}
+                scheduleEntryId={activeId}
+                viewer={viewer}
+                onRequestCreated={handleRequestCreated}
+              />
+            ) : null}
+          </div>
+        </section>
+
+        <section className="card card--history" aria-labelledby="history-title">
+          <h2 id="history-title" className="card__title">
+            <ScrollText size={18} /> {strings.historyTitle()}
+          </h2>
+          <div className="card__body">
+            <History />
+          </div>
+        </section>
       </main>
 
       {showDemoControls && (
         <div className="drawer">
-          <button type="button" className="icon-button drawer__close" aria-label="Close demo controls" onClick={() => setShowDemoControls(false)}>
+          <button
+            type="button"
+            className="icon-button drawer__close"
+            aria-label="Close demo controls"
+            onClick={() => setShowDemoControls(false)}
+          >
             <X size={16} />
           </button>
           <DemoControls onChanged={onChanged} />

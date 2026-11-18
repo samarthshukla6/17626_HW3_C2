@@ -211,14 +211,16 @@ note can be added and is visible with the request.
 - **FR-001**: The system MUST show the court-ordered parenting plan as the original schedule,
   MUST offer no way to edit or delete an original-plan entry, and, when a change is proposed or
   agreed for an event, MUST show the original entry next to it. (REQ-01)
-- **FR-002**: When a parent opens the app, the system MUST show on the first screen, with no
-  further navigation, the next exchange (date, time, location, whose time begins), every pending
-  request involving that parent, and every action waiting on that parent; if nothing is waiting,
-  it MUST say "Nothing is waiting for you." The first screen is a summary (Home) shown whenever
-  the app opens. It is separate from the three areas, which the system MUST keep separate:
-  Schedule shows original-plan entries and agreed changes by date; Requests lists every request
-  with its status and notice label; History lists every Case Record Entry in time order. The
-  currently selected parent MUST have a persistent, visually distinct label. (REQ-02, F-7)
+- **FR-002**: When a parent opens the app, the system MUST show everything on one screen, with no
+  navigation between sections: the next exchange (date, time, location, whose time begins), every
+  pending request involving that parent, and every action waiting on that parent; if nothing is
+  waiting, it MUST say "Nothing is waiting for you." The Schedule, Requests and History areas MUST
+  appear together on that screen as separate, labelled panels: Schedule shows the original-plan
+  entries and agreed changes as a calendar, and selecting an exchange on it shows that exchange's
+  entry, its whole history (FR-013) and the "Request a change" form; Requests lists every request
+  with its status and notice label, with the ones waiting on this parent first; History lists every
+  Case Record Entry in time order. The currently selected parent MUST have a persistent, visually
+  distinct label. (REQ-02, F-7, F-15)
 - **FR-003**: When a parent submits a change request, the system MUST require the affected
   event, a proposed new date/time, and a non-empty reason (an alternative date is optional). If a
   required field is missing, the system MUST NOT send the request and MUST name the missing
@@ -227,8 +229,8 @@ note can be added and is visible with the request.
   can't be changed." If the affected event already has a Pending request, the system MUST NOT
   send the new request and MUST show "This exchange already has a pending request. It needs a
   response or a withdrawal first." until the first one is resolved (Agreed, Declined, Withdrawn,
-  or Lapsed). After a successful submission, the system MUST show "Request submitted" and open
-  the Requests area containing the new request. (REQ-03, F-8)
+  or Lapsed). After a successful submission, the system MUST show "Request submitted" to the
+  submitting parent and the new request MUST be visible in the Requests panel. (REQ-03, F-8, F-15)
 - **FR-004**: When the server receives a request, the system MUST calculate official notice as
   the affected event's start time minus the server-received time, in whole hours rounded down.
   Notice under 48 hours MUST be labelled "Short notice: N h at server (plan asks for 48 h)" and
@@ -555,10 +557,16 @@ Scenario: Truck-stop notice shows trusted and contextual figures (F-6)
   Then it shows "Short notice: 46 h at server (plan asks for 48 h); written 50 h before (device time, not verified)"
   And the official threshold result remains based on 46 h at server
 
-Scenario: Successful submission is visible (F-8)
+Scenario: Successful submission is visible (F-8, F-15)
   When Jason successfully submits a request
   Then he sees "Request submitted"
-  And the Requests area opens with the new request visible
+  And the new request is visible in the Requests panel on the same screen
+
+Scenario: Choosing an exchange from the calendar (F-15)
+  Given Jason is on the first screen
+  When he selects Fri 20 Nov on the Schedule calendar
+  Then the same screen shows "Fri 20 Nov 18:00, Jason's weekend (court plan)", its history and "Request a change"
+  And the Requests and History panels stay visible
 ```
 
 ## Revision history
@@ -571,6 +579,7 @@ Scenario: Successful submission is visible (F-8)
 - V2, F-6: FR-004 shows the trusted server notice and the unverified written-time context together; Q-3 remains open.
 - V2, F-7 to F-10: FR-002, FR-003, FR-006 and FR-013 clarify the low-risk usability behavior found in V1.
 - V2 verification, F-11 to F-14: no spec change. Using V2 in a browser found four implementation defects against FR-002, FR-003 and FR-009 to FR-012 as already written (delivery on reconnect, separate delivered and read lines, the confirmation shown to the wrong parent, raw labels in History). They were fixed in code under tasks T083 to T086.
+- V2 verification, F-15: FR-002 and FR-003 now put the Schedule, Requests and History areas on one screen as separate panels, with the calendar used to choose an exchange. Using V2 showed that one task (pick an exchange, send a request, see it arrive) took four separate screens. Melissa wanted the schedule and pending changes visible "without digging through menus" (E-07), and Ruth wanted exchanges, recent changes and related messages "visible together" (E-76).
 
 ## Out of Scope
 
