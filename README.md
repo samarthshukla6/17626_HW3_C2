@@ -13,7 +13,7 @@ The sprint feature: a parent asks to change the custody schedule, and both paren
 | 1 | GitHub Version 1: initial goal model, specification, Spec Kit artifacts and prototype source | [v1 branch](https://github.com/samarthshukla6/17626_HW3_C2/tree/v1) (tag [`v1.0`](https://github.com/samarthshukla6/17626_HW3_C2/releases/tag/v1.0)) |
 | 2 | GitHub Version 2: revised goal model, specification, Spec Kit artifacts and prototype source | [v2 branch](https://github.com/samarthshukla6/17626_HW3_C2/tree/v2) (tag [`v2.0`](https://github.com/samarthshukla6/17626_HW3_C2/releases/tag/v2.0)) |
 | 3 | Prototype V1 | https://17626-hw-3-c2.vercel.app/ |
-| 4 | Prototype V2 | https://17626-hw-3-c2-v2.vercel.app/ |
+| 4 | Prototype V2 | https://17626-hw-3-c2-v2-two.vercel.app/ |
 | 5 | Requirements analysis and learning log | [docs/learning-log.md](docs/learning-log.md) |
 
 Supporting documents:
