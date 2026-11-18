@@ -1,4 +1,5 @@
 import type { Parent } from "../domain/types";
+import { Avatar } from "./ui/Avatar";
 
 interface ViewingAsSwitchProps {
   viewer: Parent;
@@ -10,22 +11,20 @@ export function ViewingAsSwitch({ viewer, onChange }: ViewingAsSwitchProps): Rea
   return (
     <div className="viewing-as" role="group" aria-label="Viewing as">
       <strong className="viewing-as__current">Current parent: {viewer}</strong>
-      <button
-        type="button"
-        aria-pressed={viewer === "Melissa"}
-        className={viewer === "Melissa" ? "viewing-as__selected" : undefined}
-        onClick={() => onChange("Melissa")}
-      >
-        Melissa
-      </button>
-      <button
-        type="button"
-        aria-pressed={viewer === "Jason"}
-        className={viewer === "Jason" ? "viewing-as__selected" : undefined}
-        onClick={() => onChange("Jason")}
-      >
-        Jason
-      </button>
+      <div className="viewing-as__options">
+        {(["Melissa", "Jason"] as const).map((parent) => (
+          <button
+            key={parent}
+            type="button"
+            aria-pressed={viewer === parent}
+            className={`viewing-as__option${viewer === parent ? " viewing-as__selected" : ""}`}
+            onClick={() => onChange(parent)}
+          >
+            <Avatar parent={parent} size={30} />
+            {parent}
+          </button>
+        ))}
+      </div>
     </div>
   );
 }

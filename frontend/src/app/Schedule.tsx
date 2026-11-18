@@ -4,6 +4,8 @@ import { strings } from "../copy/strings";
 import { formatDateTime } from "../domain/format";
 import type { Parent } from "../domain/types";
 import { RequestForm } from "./RequestForm";
+import { Avatar } from "./ui/Avatar";
+import { ArrowRightLeft, CarFront, Home as HomeIcon } from "lucide-react";
 import type { ChangeRequestView } from "../domain/requests";
 
 interface ScheduleProps {
@@ -23,10 +25,22 @@ export function Schedule({ viewer, onRequestCreated }: ScheduleProps): React.Rea
   }
 
   return (
-    <section aria-label="Schedule">
-      <h2>Schedule</h2>
+    <section aria-label="Schedule" className="schedule">
+      <h2 className="visually-hidden">Schedule</h2>
+      <div className="schedule__grid">
       {rows.map((row) => (
-        <div className="schedule-row" key={row.entry.id} data-testid={`schedule-row-${row.entry.id}`}>
+        <div
+          className={`schedule-row schedule-row--${row.entry.whoseTimeBegins.toLowerCase()}${row.agreedChange ? " schedule-row--changed" : ""}${row.pendingLabel ? " schedule-row--pending" : ""}`}
+          key={row.entry.id}
+          data-testid={`schedule-row-${row.entry.id}`}
+        >
+          <div className="schedule-row__head">
+            <Avatar parent={row.entry.whoseTimeBegins} size={34} />
+            <span className="schedule-row__kind">
+              {row.entry.kind === "dropoff" ? <HomeIcon size={14} /> : <CarFront size={14} />}
+            </span>
+            {row.agreedChange ? <ArrowRightLeft size={16} className="schedule-row__changed-icon" /> : null}
+          </div>
           <p className="schedule-row__original">
             {strings.originalPlanEntry(
               formatDateTime(row.entry.startDateTime),
@@ -34,9 +48,9 @@ export function Schedule({ viewer, onRequestCreated }: ScheduleProps): React.Rea
               row.entry.kind,
             )}
           </p>
-          {row.pendingLabel ? <p>{row.pendingLabel}</p> : null}
+          {row.pendingLabel ? <p className="schedule-row__pending">{row.pendingLabel}</p> : null}
           {row.agreedChange ? (
-            <p>
+            <p className="schedule-row__agreed">
               {strings.agreedByBothParents(formatDateTime(row.agreedChange.request.proposedTime))}
             </p>
           ) : null}
@@ -52,12 +66,13 @@ export function Schedule({ viewer, onRequestCreated }: ScheduleProps): React.Rea
               }}
             />
           ) : (
-            <button type="button" onClick={() => setOpenFormFor(row.entry.id)}>
+            <button type="button" className="button-soft" onClick={() => setOpenFormFor(row.entry.id)}>
               Request a change
             </button>
           )}
         </div>
       ))}
+      </div>
     </section>
   );
 }

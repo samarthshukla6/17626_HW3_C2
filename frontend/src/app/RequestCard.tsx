@@ -6,6 +6,8 @@ import { getEvents } from "../domain/events";
 import { getDeliveryState, markRead, retryDelivery } from "../domain/delivery";
 import { strings } from "../copy/strings";
 import { formatDateTime, formatTime, parseLocalInputAsUTC } from "../domain/format";
+import { Avatar } from "./ui/Avatar";
+import { NoticeGauge } from "./NoticeGauge";
 
 interface RequestCardProps {
   request: ChangeRequestView;
@@ -116,14 +118,17 @@ export function RequestCard({ request, viewer, onChanged }: RequestCardProps): R
   }
 
   return (
-    <div className="request-card" data-testid={`request-card-${request.id}`}>
-      <p className="request-card__summary">
-        {request.proposer} proposed {formatDateTime(request.proposedTime)} — {request.reason}
-      </p>
+    <div className={`request-card request-card--${request.proposer.toLowerCase()}`} data-testid={`request-card-${request.id}`}>
+      <div className="request-card__top">
+        <Avatar parent={request.proposer} size={36} />
+        <p className="request-card__summary">
+          {request.proposer} proposed {formatDateTime(request.proposedTime)} — {request.reason}
+        </p>
+      </div>
       {request.status ? (
-        <p className="request-card__status">Status: {request.status}</p>
+        <p className={`request-card__status status status--${request.status.toLowerCase()}`}>Status: {request.status}</p>
       ) : (
-        <p className="request-card__status">Not sent yet</p>
+        <p className="request-card__status status status--unsent">Not sent yet</p>
       )}
 
       {request.savedOnDeviceWrittenTime ? (
@@ -133,7 +138,10 @@ export function RequestCard({ request, viewer, onChanged }: RequestCardProps): R
         </div>
       ) : (
         <>
-          <p className="request-card__notice">{request.noticeLabel}</p>
+          <div className="request-card__notice-row">
+            <NoticeGauge label={request.noticeLabel} />
+            <p className="request-card__notice">{request.noticeLabel}</p>
+          </div>
           {request.writtenNoticeContext ? (
             <p className="request-card__notice-context">{request.writtenNoticeContext}</p>
           ) : null}

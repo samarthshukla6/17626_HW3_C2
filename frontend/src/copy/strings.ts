@@ -122,6 +122,29 @@ export const strings = {
     }
   },
 
+  // Step 6b visual redesign: labels for the dashboard layout. Kept here so
+  // the FR-012 banned-word scan covers them too.
+  appName: (): string => "CoParent Record",
+  appTagline: (): string => "Shared custody schedule",
+  greeting: (viewer: Parent): string => `Hi ${viewer}`,
+  viewTitle: (view: string): string =>
+    ({ home: "Overview", schedule: "Schedule", requests: "Requests", history: "History", eventDetail: "Exchange history" })[view] ?? view,
+  serverTimeChip: (time: string): string => `Server time ${time}`,
+  connectionChip: (online: boolean): string => (online ? "Online" : "Offline"),
+  nextExchangeTitle: (): string => "Coming up",
+  waitingTitle: (): string => "Waiting for you",
+  otherPendingTitle: (): string => "Other pending requests",
+  calendarTitle: (): string => "Custody calendar",
+  activityTitle: (): string => "Recent activity",
+  noActivity: (): string => "Nothing has happened yet.",
+  timeUntil: (days: number, hours: number): string =>
+    days > 0 ? `in ${days} d ${hours} h` : hours > 0 ? `in ${hours} h` : "starting now",
+  parentsTime: (parent: Parent): string => `${parent}'s time`,
+  calendarExchange: (): string => "Exchange",
+  calendarChange: (): string => "Agreed change",
+  calendarPending: (): string => "Change proposed",
+  openHistoryFor: (): string => "Exchange history",
+
   writtenDeviceTime: (time: string): string => `Written ${time} (device time, not verified)`,
 
   receivedByServer: (time: string): string => `Received by server ${time}`,

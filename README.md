@@ -38,6 +38,7 @@ We changed the goal model and the spec first, then the plan, tasks and code. Det
 - Unsent requests (F-1, F-2): an item still on the sender's phone shows "Not sent yet" and its written time, with no status.
 - Usability (F-7 to F-10): the current parent is highlighted, a submitted request is confirmed, times sit on separate lines, and declining with an alternative works.
 - Fixes found while verifying V2 (F-11 to F-14): requests sent to an offline parent are delivered when they reconnect, delivered and read times are both shown, the confirmation only appears for the parent who submitted, and History uses readable labels.
+- Visual redesign (presentation only): V2 is a dashboard with a sidebar, illustrated avatars, a custody calendar, a notice gauge and delivery steps. It doesn't change any requirement or behaviour, and the calendar deliberately shows only the schedule, never counts or scores of either parent (FR-012).
 
 ## Run locally
 

@@ -318,3 +318,8 @@ Using V2 in a browser showed four implementation defects that the Phase 10 tests
 - [x] T084 [US3] Show Delivered, Read and Not delivered on separate lines in `frontend/src/app/RequestCard.tsx`, so Delivered stays visible after Read and an earlier failure stays visible after a successful retry. Tests in `frontend/tests/app/t084-t085-review-fixes.test.tsx`. (F-12, REQ-09, REQ-11)
 - [x] T085 [US2] Show the submission confirmation only to the parent who submitted, and clear it when the viewer changes or they move to another area, in `frontend/src/app/App.tsx`. Tests in `frontend/tests/app/t084-t085-review-fixes.test.tsx`. (F-13, REQ-02, REQ-03)
 - [x] T086 [US4] Replace raw event types in the History area ("Jason: create") with neutral labels from `frontend/src/copy/strings.ts` (`historyLabel`), in `frontend/src/app/History.tsx`. Tests in `frontend/tests/app/t086-history-labels.test.tsx`. (F-14, REQ-02, REQ-11, REQ-12)
+
+### Step 6b: visual redesign (presentation only)
+
+- [x] T087 Restyle the prototype as a dashboard: sidebar with avatar parent switch and icon navigation, a fixed non-scrolling layout on desktop (stacked on phones, NFR-01), an overview with the next exchange, waiting requests, a custody calendar and recent activity, a notice gauge on each request (REQ-04), and delivery steps on the request card (REQ-09). No requirement changed: all text still comes from `frontend/src/copy/strings.ts` and passes the FR-012 banned-word check, the calendar shows only the schedule (no counts or scores of either parent, FR-012), avatars are generated illustrations of no real person, and all 99 tests pass unchanged.
+
