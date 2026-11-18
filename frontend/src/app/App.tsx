@@ -54,7 +54,21 @@ export function App(): React.ReactElement {
   const [view, setView] = useState<View>("home");
   const [selectedEntryId, setSelectedEntryId] = useState<string | undefined>(undefined);
   const [showDemoControls, setShowDemoControls] = useState(false);
-  const [submissionMessage, setSubmissionMessage] = useState<string | undefined>(undefined);
+  // T085 (REQ-02, REQ-03, F-13): the confirmation belongs to the parent who
+  // submitted, and is cleared when the viewer changes or they navigate away.
+  const [submissionMessage, setSubmissionMessage] = useState<
+    { text: string; author: Parent } | undefined
+  >(undefined);
+
+  function changeViewer(parent: Parent): void {
+    setSubmissionMessage(undefined);
+    setViewer(parent);
+  }
+
+  function navigate(next: View): void {
+    setSubmissionMessage(undefined);
+    setView(next);
+  }
   const [, setRefreshToken] = useState(0);
 
   function onChanged(): void {
@@ -67,29 +81,32 @@ export function App(): React.ReactElement {
   }
 
   function handleRequestCreated(request: ChangeRequestView): void {
-    setSubmissionMessage(
-      request.savedOnDeviceWrittenTime ? strings.savedOnDeviceNotSentYet() : strings.requestSubmitted(),
-    );
+    setSubmissionMessage({
+      text: request.savedOnDeviceWrittenTime ? strings.savedOnDeviceNotSentYet() : strings.requestSubmitted(),
+      author: request.proposer,
+    });
     setView("requests");
   }
 
   return (
     <div className="app" style={{ maxWidth: "375px", margin: "0 auto" }}>
-      <ViewingAsSwitch viewer={viewer} onChange={setViewer} />
+      <ViewingAsSwitch viewer={viewer} onChange={changeViewer} />
 
-      {submissionMessage ? <p role="status" className="submission-message">{submissionMessage}</p> : null}
+      {submissionMessage && submissionMessage.author === viewer ? (
+        <p role="status" className="submission-message">{submissionMessage.text}</p>
+      ) : null}
 
       <nav aria-label="Main navigation">
-        <button type="button" onClick={() => setView("home")}>
+        <button type="button" onClick={() => navigate("home")}>
           Home
         </button>
-        <button type="button" onClick={() => setView("schedule")}>
+        <button type="button" onClick={() => navigate("schedule")}>
           Schedule
         </button>
-        <button type="button" onClick={() => setView("requests")}>
+        <button type="button" onClick={() => navigate("requests")}>
           Requests
         </button>
-        <button type="button" onClick={() => setView("history")}>
+        <button type="button" onClick={() => navigate("history")}>
           History
         </button>
       </nav>

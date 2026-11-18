@@ -156,14 +156,10 @@ export function RequestCard({ request, viewer, onChanged }: RequestCardProps): R
               const failedEvent = allEvents.filter(
                 (e) => e.type === "delivery-failed" && e.targetEventId === item.id,
               ).at(-1);
-              const trackingTime =
-                itemState === "read"
-                  ? readEvent?.serverTime
-                  : itemState === "delivered"
-                    ? deliveredEvent?.serverTime
-                    : itemState === "not-delivered"
-                      ? failedEvent?.serverTime
-                      : undefined;
+              // T084 (REQ-09, F-12): each tracking state that has happened gets its
+              // own line, so "Delivered" stays visible after "Read" is recorded and
+              // an earlier failure stays visible after a successful retry.
+              const nothingYet = !failedEvent && !deliveredEvent;
 
               return (
                 <li key={item.id} className="request-card__item">
@@ -172,17 +168,28 @@ export function RequestCard({ request, viewer, onChanged }: RequestCardProps): R
                     <span>{strings.writtenDeviceTime(formatTime(item.writtenTime))}</span>
                   ) : null}
                   <span>{strings.receivedByServer(formatTime(item.serverTime))}</span>
-                  <span className="request-card__delivery">
-                    {itemState === "not-delivered"
-                      ? strings.notDeliveredAt(trackingTime ? formatTime(trackingTime) : "")
-                      : itemState === "read"
-                        ? strings.readAt(trackingTime ? formatTime(trackingTime) : "")
-                        : itemState === "delivered"
-                          ? strings.deliveredAt(trackingTime ? formatTime(trackingTime) : "")
-                          : itemState === "waiting-offline"
-                            ? strings.waitingForOfflineParent()
-                            : strings.waitingForDelivery()}
-                  </span>
+                  {failedEvent ? (
+                    <span className="request-card__delivery">
+                      {strings.notDeliveredAt(formatTime(failedEvent.serverTime))}
+                    </span>
+                  ) : null}
+                  {deliveredEvent ? (
+                    <span className="request-card__delivery">
+                      {strings.deliveredAt(formatTime(deliveredEvent.serverTime))}
+                    </span>
+                  ) : null}
+                  {readEvent ? (
+                    <span className="request-card__delivery">
+                      {strings.readAt(formatTime(readEvent.serverTime))}
+                    </span>
+                  ) : null}
+                  {nothingYet ? (
+                    <span className="request-card__delivery">
+                      {itemState === "waiting-offline"
+                        ? strings.waitingForOfflineParent()
+                        : strings.waitingForDelivery()}
+                    </span>
+                  ) : null}
                   {itemState === "not-delivered" && item.author === viewer ? (
                     <button
                       type="button"

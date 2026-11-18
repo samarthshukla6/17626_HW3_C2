@@ -1,8 +1,8 @@
 import { appendEvent, getEvents } from "./events";
 import { getServerTime, getDeviceTime, wholeHoursBetween } from "./clock";
 import { getScheduleEntry } from "./schedule";
-import { getQueuedItems, isOnline, queueLocally, setOnFlush } from "./offlineQueue";
-import { deliverItem } from "./delivery";
+import { getQueuedItems, isOnline, queueLocally, setOnFlush, setOnReconnect } from "./offlineQueue";
+import { deliverItem, flushDeliveryTo } from "./delivery";
 import { strings } from "../copy/strings";
 import { otherParent } from "./types";
 import type {
@@ -246,12 +246,18 @@ export function createRequest(input: CreateRequestInput): Result<ChangeRequestVi
   return { ok: true, value: getChangeRequest(requestId) as ChangeRequestView };
 }
 
+// T083 (REQ-09, F-11): every item a parent sent while offline is delivered
+// once the server has it, not only the original request.
 setOnFlush((_parent, flushed) => {
   for (const evt of flushed) {
-    if (evt.type === "create") {
-      deliverItem(evt, otherParent(evt.author));
-    }
+    deliverItem(evt, otherParent(evt.author));
   }
+});
+
+// T083 (REQ-09, F-11): items that reached the server while the recipient was
+// offline are delivered as soon as the recipient comes back online.
+setOnReconnect((parent) => {
+  flushDeliveryTo(parent);
 });
 
 export interface RespondInput {

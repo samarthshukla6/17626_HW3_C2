@@ -15,9 +15,19 @@ const onlineState: Record<Parent, boolean> = { Melissa: true, Jason: true };
 let queue: QueuedItem[] = [];
 let serverUnreachable = false;
 let onFlush: ((parent: Parent, flushed: DomainEvent[]) => void) | undefined;
+let onReconnect: ((parent: Parent) => void) | undefined;
 
 export function isOnline(parent: Parent): boolean {
   return onlineState[parent];
+}
+
+/**
+ * T083 (REQ-09, F-11): lets the delivery module deliver items that were
+ * waiting for this parent, once they come back online, without
+ * offlineQueue.ts importing delivery.ts.
+ */
+export function setOnReconnect(callback: (parent: Parent) => void): void {
+  onReconnect = callback;
 }
 
 /** Lets requests.ts know when a flush happens, without offlineQueue.ts importing requests.ts. */
@@ -31,6 +41,7 @@ export function setOnline(parent: Parent, online: boolean): void {
   notifyChange();
   if (online && wasOffline) {
     flushQueue(parent);
+    onReconnect?.(parent);
   }
 }
 

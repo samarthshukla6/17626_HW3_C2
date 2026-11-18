@@ -271,3 +271,8 @@ F-7 to F-10 do not introduce a new product capability. They make existing flows 
 ### 8.4 Deferred decision
 
 We did not add automatic repeated delivery attempts or background notifications. V2 provides an explicit retry after a recorded failure. Production retry timing and limits need infrastructure and stakeholder input that are outside this prototype. The deferred slices D to J remain unchanged.
+
+### 8.5 What verifying V2 changed in the model
+
+Using V2 in the browser found four more implementation defects (F-11 to F-14 in `docs/traceability.md`). None of them changes a goal or a decision, because the spec already described the right behaviour. They do change how well two sprint goals are met. In V1, SP-6 ("recorded times match what really happened") was only partly met: a request sent while the other parent was offline never showed as delivered, and the delivered time vanished once something was read. V2 meets SP-6 fully. SP-8 (neutral record) is also met more completely, because the History area now uses the same neutral labels as the rest of the app. All conflicts X-1 to X-7 and questions Q-1 to Q-6 stay in the model, with X-3 and Q-3 updated as described in 8.1.
+
