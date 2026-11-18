@@ -254,7 +254,7 @@ The X-3 link in the goal model is therefore revised from "server, open" to "both
 
 | ID | V2 assumption | Finding | Used in |
 |---|---|---|---|
-| A-12 | "Read" means the recipient explicitly opens the request details. Rendering a card in Home or Requests does not count. | F-3 | REQ-09 |
+| A-12 | "Read" means the recipient explicitly opens the request details. Rendering a card in the Requests panel does not count. | F-3 | REQ-09 |
 | A-13 | An item waiting because the recipient is offline is labelled "Waiting to be delivered (other parent offline)". This is distinct from the failure state "Not delivered". | F-4 | REQ-09 |
 | A-14 | An item that exists only on the sender's device shows "Not sent yet" instead of a request status. It also shows its written device time. | F-1, F-2 | REQ-05, REQ-10 |
 | A-15 | After a recorded delivery failure, the sender may retry. A successful retry appends a delivery event and keeps the earlier failure in the history. | F-5 | REQ-09, REQ-11 |
@@ -264,7 +264,7 @@ The X-3 link in the goal model is therefore revised from "server, open" to "both
 F-7 to F-10 do not introduce a new product capability. They make existing flows understandable and usable at the required 375 px width.
 
 - F-7: the selected parent is shown with a persistent, high-contrast state in the existing A-1 switch (REQ-02, SP-2).
-- F-8: a successful request submission shows a visible confirmation and opens Requests, where the new request can be reviewed (REQ-02, REQ-03, SP-2, SP-3).
+- F-8: a successful request submission shows a visible confirmation and opens Requests, where the new request can be reviewed (REQ-02, REQ-03, SP-2, SP-3). F-15 later replaced "opens Requests" with the new request appearing in the Requests panel on the same screen (section 8.6).
 - F-9: request events and their timestamps use separate lines and spacing (REQ-09, REQ-13, SP-6, SP-9).
 - F-10: the alternative datetime input keeps a valid `datetime-local` value until confirmation, so the existing decline-with-alternative requirement can be completed (REQ-06, SP-2, SP-3). Code inspection showed that V1 replaced the control's local value with an ISO value it could not display, so we classify F-10 as an implementation defect.
 
@@ -278,6 +278,6 @@ Using V2 in the browser found four more implementation defects (F-11 to F-14 in 
 
 ### 8.6 One screen instead of four areas (F-15)
 
-When we reviewed the deployed V2 as Melissa would use it, answering one question still meant moving between Home, Schedule, Requests and History, and the calendar could not be clicked. This goes against SP-2 ("see what is waiting without searching"), which came from Melissa wanting things "without digging through menus" (E-07). Ruth said the same from the mediator's side: upcoming exchanges, recent changes, expenses and messages "visible together" (E-76). Expenses stay deferred (slice D), so only the first three apply here.
+When we reviewed the deployed V2 as Melissa would use it, answering one question still meant moving between Home, Schedule, Requests and History, and the calendar could not be clicked. This goes against SP-2 ("current state and waiting actions visible at once"), which came from Melissa wanting things "without digging through menus" (E-07). Ruth said the same from the mediator's side: upcoming exchanges, recent changes, expenses and messages "visible together" (E-76). Expenses stay deferred (slice E), so only the first three apply here. In the same answer as E-07, Melissa also asked for the message, calendar and expense areas to be "clearly separated" (E-77). One screen does not have to mean one blended list, so we kept each area as its own labelled panel.
 
 The goals were right and the spec was wrong. FR-002 told us to build separate areas and FR-003 told us to "open Requests" after a submission. We changed both before touching code. FR-002 now asks for one screen with labelled Schedule, Requests and History panels, a calendar on which choosing an exchange shows its entry, its whole history (SP-9, REQ-13) and the request form (SP-3). No goal, conflict or assumption changed. FR-012 still applies to the new layout: the calendar shows whose time each day is and never counts anything either parent did.

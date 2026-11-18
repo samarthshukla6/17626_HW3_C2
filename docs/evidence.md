@@ -82,3 +82,4 @@ Sources: `S-` = Samarth's interviews (`S-M1`/`S-M2` Melissa, `S-J1`/`S-J2` Jason
 | E-74 | S-M1:58 | Melissa | “A change is only something I treat as real once the other parent clearly agrees in writing” |
 | E-75 | K-R:12 | Ruth | “display any edit or deletion as a visible event in a permanent audit trail, with reliable timestamps” |
 | E-76 | S-R1:79 | Ruth | “I'd want upcoming exchanges, recent changes, unresolved expenses, and the related messages visible together” |
+| E-77 | S-M2:31 | Melissa | “The message, calendar, and expense areas should be clearly separated” |

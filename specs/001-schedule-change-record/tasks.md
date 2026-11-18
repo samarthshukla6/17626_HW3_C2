@@ -15,7 +15,7 @@ description: "Task list template for feature implementation"
 ## Format: `[ID] [P?] [Story] Description`
 
 - **[P]**: Can run in parallel (different files, no dependency on an incomplete task)
-- **[Story]**: Which user story this task belongs to (US1–US5); omitted for Setup, Foundational, and Polish
+- **[Story]**: Which user story this task belongs to (US1 to US5); omitted for Setup, Foundational, and Polish
 - Every task names the REQ ID(s) it serves
 
 ## Path Conventions
@@ -124,7 +124,7 @@ Single frontend project at the repo root (plan.md's Project Structure): `fronten
 - [X] T039 [US3] Build `frontend/src/app/DemoControls.tsx`, labelled `"Demo controls (testing aid, not part of the product)"`: set/advance server time, Jason's device-clock offset, each parent's online/offline switch, "fail the next delivery," and "server unreachable." (depends on T008, T037, T038)
 - [X] T055 [US3] Extend `frontend/src/app/RequestCard.tsx` with the four times shown separately (written with "device time, not verified", received by server, delivered or "Not delivered", read), the overdue flag, "Saved on this device, not sent yet" on the sender's side for queued items, and a `markRead` call when the recipient opens the card. (REQ-08, REQ-09, REQ-10) (depends on T023, T036, T037, T038)
 
-**Checkpoint**: User Stories 1–3 work together; notice, overdue, Lapsed, timestamps, and the offline queue are demonstrable through Demo Controls.
+**Checkpoint**: User Stories 1 to 3 work together; notice, overdue, Lapsed, timestamps, and the offline queue are demonstrable through Demo Controls.
 
 ---
 
@@ -149,7 +149,7 @@ Single frontend project at the repo root (plan.md's Project Structure): `fronten
 - [X] T047 [P] [US4] Audit `frontend/src/copy/strings.ts` against `req-12.test.ts` (T041) and rephrase any string that fails it. (REQ-12) (depends on T041)
 - [X] T056 [US4] Extend `frontend/src/app/RequestCard.tsx` with Edit (proposed time and alternative date only, no control for the fixed fields) and Add follow-up for the sender while Pending. (REQ-08, REQ-11) (depends on T023, T043, T044)
 
-**Checkpoint**: User Stories 1–4 work together; the full record is visible, permanent, and neutrally worded.
+**Checkpoint**: User Stories 1 to 4 work together; the full record is visible, permanent, and neutrally worded.
 
 ---
 
@@ -177,7 +177,7 @@ Single frontend project at the repo root (plan.md's Project Structure): `fronten
 - [X] T051 [P] Wire `frontend/src/app/App.tsx`: top-level layout composing `ViewingAsSwitch`, `Home`, `Schedule`, `Requests`, `History`, `EventDetail`, and the footer "Demo controls" entry point; confirm usability at 375px. (NFR-01, SC-007)
 - [X] T052 [P] Add a "Reset demo data" confirmation flow (in-page prompt, not a browser dialog) to `frontend/src/app/DemoControls.tsx`, calling `resetDemoData()`. (depends on T039, T013)
 - [X] T053 Run `npm test` in `frontend/` and confirm all 14 `req-XX.test.ts` files and `respond-flow.test.tsx` pass. (SC-006) (depends on all test and implementation tasks above)
-- [X] T054 Walk through quickstart.md's "Try the core flow by hand" steps 1–5 against the running app and confirm each step matches its cited REQ. Verified: `npm run build` and the Vite dev server both succeed with no errors; each of the 5 steps is covered end-to-end by a passing automated test (req-03/req-06 create+accept, req-07 agreed-next-to-original, req-08 Lapsed-on-clock-advance, req-10 offline-then-reconnect). Not separately clicked through in a live browser in this session (no browser-automation tool was loaded) - recommend a manual pass before treating the demo as release-ready. (depends on T051, T052)
+- [X] T054 Walk through quickstart.md's "Try the core flow by hand" steps 1 to 5 against the running app and confirm each step matches its cited REQ. Verified: `npm run build` and the Vite dev server both succeed with no errors; each of the 5 steps is covered end-to-end by a passing automated test (req-03/req-06 create+accept, req-07 agreed-next-to-original, req-08 Lapsed-on-clock-advance, req-10 offline-then-reconnect). Not separately clicked through in a live browser in this session (no browser-automation tool was loaded) - recommend a manual pass before treating the demo as release-ready. (depends on T051, T052)
 
 ---
 
@@ -224,12 +224,12 @@ Because `requests.ts` is one file that every story after US1 extends, the storie
 ### Parallel Opportunities
 
 - Setup: `T003`, `T004` in parallel after `T002`.
-- Foundational: `T005`–`T011` in parallel (four independent test+implementation pairs plus mock data); `T012`/`T013` follow once all four exist.
-- User Story 1 tests: `T014`–`T018` in parallel.
+- Foundational: `T005` to `T011` in parallel (four independent test+implementation pairs plus mock data); `T012`/`T013` follow once all four exist.
+- User Story 1 tests: `T014` to `T018` in parallel.
 - User Story 1 UI: `T023`, `T024` in parallel once `T021`/`T022` are done.
 - User Story 2 tests: `T025`, `T026` in parallel; `T029` in parallel with `T027`/`T028`.
-- User Story 3 tests: `T031`–`T034` in parallel; `T037`, `T038` in parallel.
-- User Story 4 tests: `T040`–`T042` in parallel; `T045`, `T047` in parallel with `T043`/`T044`.
+- User Story 3 tests: `T031` to `T034` in parallel; `T037`, `T038` in parallel.
+- User Story 4 tests: `T040` to `T042` in parallel; `T045`, `T047` in parallel with `T043`/`T044`.
 - User Story 5 test: `T048` alone (single test file for this story).
 - Polish: `T051`, `T052` in parallel.
 
@@ -304,7 +304,7 @@ Each story after US1 extends `requests.ts` rather than replacing it, so earlier 
 - [x] T075 [US3] Implement queued written time and no-status semantics in `frontend/src/domain/requests.ts` and `frontend/src/app/RequestCard.tsx`. (F-1, F-2, REQ-05, REQ-10; depends on T068)
 - [x] T076 [US3] Implement the X-3 notice label with official server and unverified written figures in `frontend/src/domain/requests.ts` and `frontend/src/copy/strings.ts`. (F-6, REQ-04; depends on T069)
 - [x] T077 [US3] Implement waiting-offline wording, explicit retry and append-only recovery in `frontend/src/domain/delivery.ts`, `frontend/src/app/RequestCard.tsx` and `frontend/src/copy/strings.ts`. (F-4, F-5, REQ-09, REQ-11; depends on T070)
-- [x] T078 [US3] Remove render-time read marking and add explicit Open details behavior in `frontend/src/app/RequestCard.tsx`. (F-3, REQ-09; depends on T071)
+- [x] T078 [US3] Remove render-time read marking and add explicit Open details behaviour in `frontend/src/app/RequestCard.tsx`. (F-3, REQ-09; depends on T071)
 - [x] T079 [P] [US2] Implement selected-parent styling and submission feedback/navigation in `frontend/src/app/ViewingAsSwitch.tsx`, `frontend/src/app/App.tsx`, `frontend/src/app/Schedule.tsx` and `frontend/src/index.css`. (F-7, F-8, REQ-02, REQ-03; depends on T072)
 - [x] T080 [P] [US1] Fix alternative datetime value handling in `frontend/src/app/RequestCard.tsx`. (F-10, REQ-06; depends on T073)
 - [x] T081 [P] [US4] Add readable block formatting for request events and timestamps in `frontend/src/app/RequestCard.tsx`, `frontend/src/app/History.tsx`, `frontend/src/app/EventDetail.tsx` and `frontend/src/index.css`. (F-9, REQ-09, REQ-13; depends on T074)

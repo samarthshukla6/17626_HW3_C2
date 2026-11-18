@@ -135,8 +135,8 @@ trust that nothing in that history was ever deleted or silently rewritten, and t
 system's own wording never favors one parent or scores either of them.
 
 **Why this priority**: this is what makes the record usable as evidence at all (SP-7, SP-8,
-SP-9); it depends on Stories 1–3 having produced entries to show, but is testable on its own by
-inspecting the record's behavior rather than its business outcomes.
+SP-9); it depends on Stories 1 to 3 having produced entries to show, but is testable on its own by
+inspecting the record's behaviour rather than its business outcomes.
 
 **Independent Test**: can be tested by editing a pending request and checking that the prior
 value is still visible as history, and by scanning all system-generated text for judging
@@ -157,7 +157,7 @@ language or any count/score, independent of which specific requests exist.
    follow-up, and dispute note with their times, the current outcome, and the audit events.
 5. **Given** any system-written text, **Then** it states only who did what and when, with no
    judging words (late, unreliable, failed to, ignored, refused, missed, no-show) and no count,
-   score, or ranking of either parent's behavior; both parents see identical labels, rules, and
+   score, or ranking of either parent's behaviour; both parents see identical labels, rules, and
    layout for the same situation.
 
 ---
@@ -367,7 +367,7 @@ note can be added and is visible with the request.
   time, and no test can produce an entry that is edited or removed in place rather than appended
   as a new event.
 - **SC-005**: A review of all system-generated text produced during testing finds zero occurrences
-  of the closed word list in FR-012 and zero counts, scores, or rankings of a parent's behavior; the same
+  of the closed word list in FR-012 and zero counts, scores, or rankings of a parent's behaviour; the same
   situation produces identical wording for both parents.
 - **SC-006**: Every acceptance scenario listed in this specification has one corresponding
   automated test, named with the REQ ID it checks.
@@ -536,7 +536,7 @@ Scenario: Offline item has no server status (F-1, F-2)
 
 Scenario: Reading requires an explicit open (F-3)
   Given Jason's request was delivered to Melissa at 09:00
-  When Melissa views Home without opening the request details
+  When Melissa views the first screen without opening the request details
   Then the request is not marked Read
   When Melissa opens the request details
   Then the request shows "Read 09:00"
@@ -577,14 +577,14 @@ Scenario: Choosing an exchange from the calendar (F-15)
 - V2, F-4: FR-009 and A-13 distinguish waiting for an offline recipient from delivery failure.
 - V2, F-5: FR-009 and A-15 add recoverable failed delivery while keeping append-only evidence.
 - V2, F-6: FR-004 shows the trusted server notice and the unverified written-time context together; Q-3 remains open.
-- V2, F-7 to F-10: FR-002, FR-003, FR-006 and FR-013 clarify the low-risk usability behavior found in V1.
+- V2, F-7 to F-10: FR-002, FR-003, FR-006 and FR-013 clarify the low-risk usability behaviour found in V1.
 - V2 verification, F-11 to F-14: no spec change. Using V2 in a browser found four implementation defects against FR-002, FR-003 and FR-009 to FR-012 as already written (delivery on reconnect, separate delivered and read lines, the confirmation shown to the wrong parent, raw labels in History). They were fixed in code under tasks T083 to T086.
-- V2 verification, F-15: FR-002 and FR-003 now put the Schedule, Requests and History areas on one screen as separate panels, with the calendar used to choose an exchange. Using V2 showed that one task (pick an exchange, send a request, see it arrive) took four separate screens. Melissa wanted the schedule and pending changes visible "without digging through menus" (E-07), and Ruth wanted exchanges, recent changes and related messages "visible together" (E-76).
+- V2 verification, F-15: FR-002 and FR-003 now put the Schedule, Requests and History areas on one screen as separate panels, with the calendar used to choose an exchange. Using V2 showed that one task (pick an exchange, send a request, see it arrive) took four separate screens. Melissa wanted the schedule and pending changes visible "without digging through menus" (E-07), and Ruth wanted exchanges, recent changes and related messages "visible together" (E-76). The panels stay separate and labelled because Melissa also asked for the areas to be "clearly separated" (E-77).
 
 ## Out of Scope
 
 Carried forward from `docs/initial-spec.md` §7 and `docs/goal-model.md` §2 (deferred slices
-D–J): recording actual exchanges (completed/refused/missed pickups), expenses and expense
+D to J): recording actual exchanges (completed/refused/missed pickups), expenses and expense
 disputes, exports and mediator/reviewer access, school and doctor notices, tone warnings, the
 child's own view, phone calls, general chat not tied to a request, real sign-in, and push
 notifications. Each stays in the goal model for a later sprint; none of it is built here.
@@ -610,7 +610,7 @@ notifications. Each stays in the goal model for a later sprint; none of it is bu
 - **A-8**: only messages tied to a specific request (its reason, the response, follow-ups) are in
   scope; general chat not tied to a request is not (used by FR-009).
 - **A-12**: "read" means the recipient explicitly opens the request details. Rendering a card in
-  Home or Requests does not count. This replaces A-7 for V2 (F-3, FR-009).
+  the Requests panel does not count. This replaces A-7 for V2 (F-3, FR-009).
 - **A-13**: "Waiting to be delivered (other parent offline)" is a delivery state distinct from
   the failure state "Not delivered" (F-4, FR-009).
 - **A-14**: an item that exists only on the sender's device has no server request status. It shows

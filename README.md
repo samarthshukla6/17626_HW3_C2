@@ -19,7 +19,7 @@ The sprint feature: a parent asks to change the custody schedule, and both paren
 Supporting documents:
 
 - [docs/goal-model.md](docs/goal-model.md): merged goal model, sprint scope, overlaps, dependencies, conflicts, assumptions, and the V2 revisions (section 8)
-- [docs/traceability.md](docs/traceability.md): requirements traceability matrix for V1 and V2, and every evaluation finding (F-1 to F-14)
+- [docs/traceability.md](docs/traceability.md): requirements traceability matrix for V1 and V2, and every evaluation finding (F-1 to F-15)
 - [docs/initial-spec.md](docs/initial-spec.md): our hand-written V1 requirements, REQ-01 to REQ-14
 - [specs/001-schedule-change-record/spec.md](specs/001-schedule-change-record/spec.md): the Spec Kit specification, with its revision history for V2
 - [docs/evidence.md](docs/evidence.md): every stakeholder quote we cite, with its transcript line
@@ -75,6 +75,6 @@ npm run dev
 
 | Member | Contributions |
 |---|---|
-| Samarth Shukla | Steps 1 to 3: merged both A2 goal models, chose the sprint scope, analysed overlaps, dependencies and conflicts, wrote the initial spec, ran Spec Kit from constitution to implementation, reviewed every generated artifact, tested Prototype V1 in a browser and sent back two rounds of fixes, and deployed V1. In the final step, verified V2 in a browser, fixed the four defects it found (F-11 to F-14), and deployed V2. |
+| Samarth Shukla | Steps 1 to 3: merged both A2 goal models, chose the sprint scope, analysed overlaps, dependencies and conflicts, wrote the initial spec, ran Spec Kit from constitution to implementation, reviewed every generated artifact, tested Prototype V1 in a browser and sent back two rounds of fixes, and deployed V1. In Step 6, verified V2 in a browser, fixed the four defects it found (F-11 to F-14), revised FR-002 and FR-003 for the one-screen layout (F-15) and rebuilt the V2 screen, and deployed V2. |
 | Kevin Huang | Steps 4 and 5: evaluated Prototype V1 against twelve scenarios, built the traceability matrix, classified findings F-1 to F-10, revised the goal model and the spec, and ran Spec Kit to plan, task and implement Prototype V2. |
 | Both | Learning log, README and the final check of both deployments. |
