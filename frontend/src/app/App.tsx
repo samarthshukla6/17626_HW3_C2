@@ -10,7 +10,21 @@ import { Requests } from "./Requests";
 import { History } from "./History";
 import { EventDetail } from "./EventDetail";
 import { DemoControls } from "./DemoControls";
-import { formatDateOnly } from "../domain/format";
+import { formatDateOnly, formatDateTime } from "../domain/format";
+import { getServerTime } from "../domain/clock";
+import { isOnline } from "../domain/offlineQueue";
+import {
+  CalendarRange,
+  CheckCircle2,
+  Clock3,
+  Inbox,
+  LayoutDashboard,
+  ScrollText,
+  SlidersHorizontal,
+  Wifi,
+  WifiOff,
+  X,
+} from "lucide-react";
 import type { ChangeRequestView } from "../domain/requests";
 import { strings } from "../copy/strings";
 
@@ -88,57 +102,112 @@ export function App(): React.ReactElement {
     setView("requests");
   }
 
+  const nav: { id: View; label: string; icon: React.ReactElement }[] = [
+    { id: "home", label: "Home", icon: <LayoutDashboard size={18} /> },
+    { id: "schedule", label: "Schedule", icon: <CalendarRange size={18} /> },
+    { id: "requests", label: "Requests", icon: <Inbox size={18} /> },
+    { id: "history", label: "History", icon: <ScrollText size={18} /> },
+  ];
+  const online = isOnline(viewer);
+
   return (
-    <div className="app" style={{ maxWidth: "375px", margin: "0 auto" }}>
-      <ViewingAsSwitch viewer={viewer} onChange={changeViewer} />
+    <div className="shell">
+      <aside className="sidebar">
+        <div className="brand">
+          <span className="brand__mark" aria-hidden="true">
+            <svg viewBox="0 0 32 32" width="30" height="30">
+              <circle cx="12" cy="13" r="6" />
+              <circle cx="21" cy="13" r="6" />
+              <path d="M5 27c1.5-5 5-7 7-7s3.2.8 4 2c.8-1.2 2-2 4-2s5.5 2 7 7" />
+            </svg>
+          </span>
+          <span>
+            <span className="brand__name">{strings.appName()}</span>
+            <span className="brand__tagline">{strings.appTagline()}</span>
+          </span>
+        </div>
 
-      {submissionMessage && submissionMessage.author === viewer ? (
-        <p role="status" className="submission-message">{submissionMessage.text}</p>
-      ) : null}
+        <ViewingAsSwitch viewer={viewer} onChange={changeViewer} />
 
-      <nav aria-label="Main navigation">
-        <button type="button" onClick={() => navigate("home")}>
-          Home
-        </button>
-        <button type="button" onClick={() => navigate("schedule")}>
-          Schedule
-        </button>
-        <button type="button" onClick={() => navigate("requests")}>
-          Requests
-        </button>
-        <button type="button" onClick={() => navigate("history")}>
-          History
-        </button>
-      </nav>
-
-      {view === "home" && <Home viewer={viewer} />}
-      {view === "schedule" && (
-        <div>
-          <Schedule viewer={viewer} onRequestCreated={handleRequestCreated} />
-          {getScheduleEntries().map((entry) => (
-            <button key={entry.id} type="button" onClick={() => openEvent(entry.id)}>
-              Open {formatDateOnly(entry.startDateTime)}
+        <nav aria-label="Main navigation" className="nav">
+          {nav.map((item) => (
+            <button
+              key={item.id}
+              type="button"
+              className={`nav__item${view === item.id || (item.id === "schedule" && view === "eventDetail") ? " nav__item--active" : ""}`}
+              onClick={() => navigate(item.id)}
+            >
+              {item.icon}
+              {item.label}
             </button>
           ))}
+        </nav>
+
+        <footer className="sidebar__footer">
+          <button type="button" className="demo-toggle" onClick={() => setShowDemoControls((v) => !v)}>
+            <SlidersHorizontal size={16} />
+            Demo controls
+          </button>
+        </footer>
+      </aside>
+
+      <main className="main">
+        <header className="topbar">
+          <div className="topbar__titles">
+            <p className="topbar__eyebrow">{strings.greeting(viewer)}</p>
+            <p className="topbar__title">{strings.viewTitle(view)}</p>
+          </div>
+          <div className="topbar__chips">
+            <span className="chip"><Clock3 size={14} /> {strings.serverTimeChip(formatDateTime(getServerTime().toISOString()))}</span>
+            <span className={`chip ${online ? "chip--ok" : "chip--off"}`}>
+              {online ? <Wifi size={14} /> : <WifiOff size={14} />} {strings.connectionChip(online)}
+            </span>
+          </div>
+        </header>
+
+        {submissionMessage && submissionMessage.author === viewer ? (
+          <p role="status" className="submission-message">
+            <CheckCircle2 size={16} /> {submissionMessage.text}
+          </p>
+        ) : null}
+
+        <div className="content">
+          {view === "home" && <Home viewer={viewer} />}
+          {view === "schedule" && (
+            <div className="schedule-view">
+              <Schedule viewer={viewer} onRequestCreated={handleRequestCreated} />
+              <div className="history-chips">
+                <p className="card__subtitle">{strings.openHistoryFor()}</p>
+                <div className="history-chips__list">
+                  {getScheduleEntries().map((entry) => (
+                    <button key={entry.id} type="button" className="chip-button" onClick={() => openEvent(entry.id)}>
+                      Open {formatDateOnly(entry.startDateTime)}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+          {view === "requests" && <Requests viewer={viewer} />}
+          {view === "history" && <History />}
+          {view === "eventDetail" && selectedEntryId && (
+            <EventDetail
+              scheduleEntryId={selectedEntryId}
+              viewer={viewer}
+              onRequestCreated={handleRequestCreated}
+            />
+          )}
+        </div>
+      </main>
+
+      {showDemoControls && (
+        <div className="drawer">
+          <button type="button" className="icon-button drawer__close" aria-label="Close demo controls" onClick={() => setShowDemoControls(false)}>
+            <X size={16} />
+          </button>
+          <DemoControls onChanged={onChanged} />
         </div>
       )}
-      {view === "requests" && <Requests viewer={viewer} />}
-      {view === "history" && <History />}
-      {view === "eventDetail" && selectedEntryId && (
-        <EventDetail
-          scheduleEntryId={selectedEntryId}
-          viewer={viewer}
-          onRequestCreated={handleRequestCreated}
-        />
-      )}
-
-      <footer>
-        <button type="button" onClick={() => setShowDemoControls((v) => !v)}>
-          Demo controls
-        </button>
-      </footer>
-
-      {showDemoControls && <DemoControls onChanged={onChanged} />}
     </div>
   );
 }

@@ -27,9 +27,9 @@ export function EventDetail({ scheduleEntryId, viewer, onRequestCreated }: Event
   }
 
   return (
-    <section aria-label="Event detail">
+    <section aria-label="Event detail" className="panel">
       <h2>{formatDateTime(timeline.entry.startDateTime)}</h2>
-      <ul>
+      <ul className="timeline">
         {timeline.items.map((item) => (
           <li key={item.event.id} className="timeline-item">
             <span className="timeline-item__description">{item.description}</span>
@@ -49,7 +49,7 @@ export function EventDetail({ scheduleEntryId, viewer, onRequestCreated }: Event
           }}
         />
       ) : (
-        <button type="button" onClick={() => setShowForm(true)}>
+        <button type="button" className="button-soft" onClick={() => setShowForm(true)}>
           Request a change
         </button>
       )}

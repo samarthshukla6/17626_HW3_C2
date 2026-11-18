@@ -17,14 +17,16 @@ export function Requests({ viewer }: RequestsProps): React.ReactElement {
   }
 
   return (
-    <section aria-label="Requests">
-      <h2>Requests</h2>
+    <section aria-label="Requests" className="panel">
+      <h2 className="visually-hidden">Requests</h2>
       {requests.length === 0 ? (
-        <p>No requests yet.</p>
+        <p className="muted">No requests yet.</p>
       ) : (
-        requests.map((request) => (
-          <RequestCard key={request.id} request={request} viewer={viewer} onChanged={onChanged} />
-        ))
+        <div className="card-grid">
+          {requests.map((request) => (
+            <RequestCard key={request.id} request={request} viewer={viewer} onChanged={onChanged} />
+          ))}
+        </div>
       )}
     </section>
   );
