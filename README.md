@@ -9,10 +9,10 @@ This repo holds our sprint for a co-parenting schedule and communication app. We
 | # | Deliverable | Link |
 |---|---|---|
 | 1 | GitHub Version 1: initial goal model, specification, Spec Kit artifacts and prototype source | [v1 branch](https://github.com/samarthshukla6/17626_HW3_C2/tree/v1) (tag `v1.0`) |
-| 2 | GitHub Version 2: revised goal model, specification, Spec Kit artifacts and prototype source | [v2 branch](https://github.com/samarthshukla6/17626_HW3_C2/tree/v2) (`v2.0` tag intentionally pending release verification) |
+| 2 | GitHub Version 2: revised goal model, specification, Spec Kit artifacts and prototype source | [v2 branch](https://github.com/samarthshukla6/17626_HW3_C2/tree/v2) (publication and the `v2.0` tag are pending release access and verification) |
 | 3 | Prototype V1 | https://17626-hw-3-c2.vercel.app/ |
 | 4 | Prototype V2 | Pending separate deployment; no URL has been verified yet |
-| 5 | Requirements analysis and learning log | added in Step 6 |
+| 5 | Requirements analysis and learning log | `docs/learning-log.md` must be authored by the students in Step 6, as required by the assignment's AI Assistance policy |
 
 Prototype V1 runs in the browser with mock data. Use the "Viewing as" switch to act as Melissa or Jason, and the "Demo controls" button at the bottom to move the clock, take a parent offline or fail a delivery.
 
@@ -22,7 +22,8 @@ Prototype V1 runs in the browser with mock data. Use the "Viewing as" switch to 
 - Step 2: overlaps, dependencies, conflicts and assumptions, in [docs/goal-model.md](docs/goal-model.md) sections 5 and 6
 - Step 3: our hand-written initial spec in [docs/initial-spec.md](docs/initial-spec.md), the Spec Kit artifacts in `.specify/` and [specs/001-schedule-change-record/](specs/001-schedule-change-record/), and the prototype in [frontend/](frontend/)
 - Step 4: V1 evaluation, findings F-1 through F-10 and REQ-01 through REQ-14 traceability in [docs/traceability.md](docs/traceability.md)
-- Step 5: revised goals and specification, updated plan/tasks, V2 implementation and automated evidence on the `v2` branch. Separate deployment and V2 browser verification remain pending.
+- Step 5: revised goals and specification, updated plan/tasks, V2 implementation and automated evidence on the local `v2` branch. GitHub publication, separate deployment and V2 browser verification remain pending.
+- Step 6: final student-authored learning log, fifth deliverable link and release merge remain pending.
 
 ## Prototype V2 changes
 
@@ -44,7 +45,7 @@ npm run dev
 
 ## Separate V2 deployment
 
-The current checkout has no verified V2 hosting project or deployment credentials, so no deployment is claimed. To protect the existing V1 URL, create a **new Vercel project** rather than reconnecting or redeploying the V1 project. Use these settings:
+The current checkout has no Vercel project binding, CLI authentication or verified V2 hosting project, so no deployment is claimed. To protect the existing V1 URL, create a **new Vercel project** rather than reconnecting or redeploying the V1 project. Use these settings:
 
 - Repository: `samarthshukla6/17626_HW3_C2`
 - Production branch: `v2`
@@ -58,7 +59,6 @@ The current checkout has no verified V2 hosting project or deployment credential
 After review, publish the branch (not performed here) and deploy the new project:
 
 ```sh
-git remote set-url origin git@github.com:samarthshukla6/17626_HW3_C2.git
 git push -u origin v2
 cd frontend
 npx vercel link
@@ -92,6 +92,5 @@ When prompted by `vercel link`, select the new V2 project. Record the returned U
 | Member | Contributions |
 |---|---|
 | Samarth Shukla | Steps 1 to 3: merged both A2 goal models, chose the sprint scope, analysed overlaps, dependencies and conflicts, wrote the initial spec, ran Spec Kit from constitution to implementation, reviewed every generated artifact, tested the running prototype in a browser and sent back two rounds of fixes, deployed Prototype V1 |
-| Kevin Huang | Steps 4 and 5: evaluates Prototype V1 against the acceptance scenarios, builds the traceability matrix, revises the goal model and spec, and prepares Prototype V2 for separate deployment and verification |
-| Both | Learning log, README and the final check of both deployments |
+| Kevin Huang | Steps 4 and 5: evaluated Prototype V1 against the acceptance scenarios, built the traceability matrix, revised the goal model and specification, and implemented and tested Prototype V2 locally |
 
