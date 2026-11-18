@@ -217,7 +217,8 @@ note can be added and is visible with the request.
   it MUST say "Nothing is waiting for you." The first screen is a summary (Home) shown whenever
   the app opens. It is separate from the three areas, which the system MUST keep separate:
   Schedule shows original-plan entries and agreed changes by date; Requests lists every request
-  with its status and notice label; History lists every Case Record Entry in time order. (REQ-02)
+  with its status and notice label; History lists every Case Record Entry in time order. The
+  currently selected parent MUST have a persistent, visually distinct label. (REQ-02, F-7)
 - **FR-003**: When a parent submits a change request, the system MUST require the affected
   event, a proposed new date/time, and a non-empty reason (an alternative date is optional). If a
   required field is missing, the system MUST NOT send the request and MUST name the missing
@@ -226,25 +227,27 @@ note can be added and is visible with the request.
   can't be changed." If the affected event already has a Pending request, the system MUST NOT
   send the new request and MUST show "This exchange already has a pending request. It needs a
   response or a withdrawal first." until the first one is resolved (Agreed, Declined, Withdrawn,
-  or Lapsed). (REQ-03)
-- **FR-004**: When the server receives a request, the system MUST calculate notice as the
-  affected event's start time minus the server-received time, in whole hours rounded down, and
-  show it on the request. Notice under 48 hours MUST be labelled "Short notice: N h given (plan
-  asks for 48 h)" and still delivered; notice of 48 hours or more MUST be labelled "N h notice
-  given." The system MUST NOT stop a request from being sent because of its notice.
-  [NEEDS CLARIFICATION: Q-3 / assumption A-3. V1 measures notice from the server-received
-  time rather than the phone-written time, to settle conflict X-3; this is the main thing the
-  prototype is meant to test and stakeholders have not confirmed it is the right reading.]
+  or Lapsed). After a successful submission, the system MUST show "Request submitted" and open
+  the Requests area containing the new request. (REQ-03, F-8)
+- **FR-004**: When the server receives a request, the system MUST calculate official notice as
+  the affected event's start time minus the server-received time, in whole hours rounded down.
+  Notice under 48 hours MUST be labelled "Short notice: N h at server (plan asks for 48 h)" and
+  still delivered; notice of 48 hours or more MUST be labelled "N h notice at server." If the
+  device-written figure differs from the server figure, the system MUST also show "written M h
+  before (device time, not verified)." The system MUST NOT stop a request because of its notice.
+  [NEEDS CLARIFICATION: Q-3. V2 keeps the trusted server figure official and shows the device
+  figure as unverified context. Stakeholders have not confirmed which figure should count.]
   [NEEDS CLARIFICATION: Q-1, whether the parenting plan itself permits a short-notice change
   when both parents agree in writing has not been confirmed with Melissa or against the court
   order; V1 allows and labels short notice per decision X-1 without resolving this.] (REQ-04)
-- **FR-005**: Each request MUST have exactly one status: Pending, Agreed, Declined, Withdrawn,
+- **FR-005**: Each request held by the server MUST have exactly one status: Pending, Agreed, Declined, Withdrawn,
   or Lapsed. Only the responding parent explicitly accepting MUST make a request Agreed, no
   timeout, edit, or other system action may. While Pending, the system MUST show the original
   schedule as the one in force, marked "Change proposed, waiting for response," and MUST NOT word
   it as a refusal, a decision, or a missed weekend. While Pending, the sending parent MAY withdraw
   the request. Withdraw MUST only be offered while the request is Pending; once it is Agreed,
-  Declined, Withdrawn or Lapsed the control is not shown. (REQ-05)
+  Declined, Withdrawn or Lapsed the control is not shown. An item that exists only on the sender's
+  device MUST show "Not sent yet" instead of a request status. (REQ-05, F-2)
 - **FR-006**: From the first screen, the responding parent MUST be able to accept or decline a
   pending request in no more than two actions: Accept then Confirm, or Decline then Confirm.
   Typing the decline reason on the confirm step doesn't count as an extra action. Adding an
@@ -253,7 +256,9 @@ note can be added and is visible with the request.
   include a suggested alternative; if given, the system MUST create it as a new, separate Change
   Request linked to the declined one, with the original responding parent as its proposer and
   the original sending parent as its responder (subject to FR-003's one-Pending-request-per-entry
-  rule). A parent MUST NOT be able to respond to their own request. (REQ-06)
+  rule). The alternative datetime control MUST retain and display the value entered until the
+  response is confirmed or cancelled. A parent MUST NOT be able to respond to their own request.
+  (REQ-06, F-10)
 - **FR-007**: When a request becomes Agreed, the system MUST, in the same update, show the
   change on the calendar as a separate entry labelled "Agreed change," and keep the original
   entry visible, marked "Changed by agreement, original kept." The request counts as the sending
@@ -271,11 +276,16 @@ note can be added and is visible with the request.
 - **FR-009**: For every request, response, and follow-up, the system MUST record and show,
   separately: the written time (the phone's time, always labelled "device time, not verified"),
   the time received by the server (the trusted time), the time delivered to the other parent's
-  app, and the time read by the other parent. If delivery fails, the system MUST show "Not
-  delivered" with the server time of the failure and MUST NOT show the item as delivered or read.
-  Every time except "written" MUST come from the server clock. (REQ-09)
+  app, and the time read by the other parent. An item waiting because the recipient is offline
+  MUST show "Waiting to be delivered (other parent offline)." If delivery fails, the system MUST
+  show "Not delivered" with the server time of the failure and MUST NOT show it as delivered or
+  read. The sender MUST be able to retry a failed delivery. A successful retry MUST append a
+  delivered event without deleting the failure. Rendering an item in a list MUST NOT mark it
+  read. The recipient MUST explicitly open its request details before read is recorded. Every
+  time except "written" MUST come from the server clock. (REQ-09, REQ-11, F-3, F-4, F-5)
 - **FR-010**: While a parent's phone is offline, the system MUST save anything they submit on the
-  phone and show "Saved on this device, not sent yet" with its written time. When the connection
+  phone and show "Saved on this device, not sent yet", "Not sent yet" in place of status, and its
+  written time labelled "device time, not verified". When the connection
   returns, the system MUST send saved items in the order they were written and record each one's
   server-received time at that moment. The other parent MUST NOT see a saved item, and it MUST
   NOT show as sent, until the server has it. Saved items MUST survive closing and reopening the
@@ -300,8 +310,9 @@ note can be added and is visible with the request.
   requests, or response times. Both parents MUST get the same labels, rules, and layout. (REQ-12)
 - **FR-013**: When a parent opens a scheduled event, the system MUST show, in time order and in
   one view: the original entry, every request for it with its notice label, every response,
-  follow-up, and dispute note with their times, the current outcome, and the audit events.
-  (REQ-13)
+  follow-up, and dispute note with their times, the current outcome, and the audit events. Each
+  event description and timestamp MUST appear on a separate readable line at 375 px width.
+  (REQ-13, F-9)
 - **FR-014**: When creating a request, a parent MAY tag it "Unexpected child illness" or "Genuine
   emergency". "Tag" is the field the parent sets; "claim" is how the system displays it. A tagged
   request MUST require a reason, and a missing one is handled by FR-003 ("Add a reason for the
@@ -511,6 +522,55 @@ Scenario: Decline with an alternative (REQ-06, A-10)
   And only Jason can accept or decline the new request
 ```
 
+### V2 acceptance examples from V1 evaluation
+
+```gherkin
+Scenario: Offline item has no server status (F-1, F-2)
+  Given Jason is offline
+  When he submits a request at Wed 18 Nov 16:00
+  Then he sees "Saved on this device, not sent yet"
+  And he sees "Not sent yet" instead of "Status: Pending"
+  And he sees "Written 16:00 (device time, not verified)"
+
+Scenario: Reading requires an explicit open (F-3)
+  Given Jason's request was delivered to Melissa at 09:00
+  When Melissa views Home without opening the request details
+  Then the request is not marked Read
+  When Melissa opens the request details
+  Then the request shows "Read 09:00"
+
+Scenario: Waiting and failed delivery are distinct (F-4, F-5)
+  Given Melissa is offline when Jason sends a request
+  Then Jason sees "Waiting to be delivered (other parent offline)"
+  When delivery is attempted and fails at 09:00
+  Then Jason sees "Not delivered 09:00"
+  And Jason can retry the delivery
+  When retry succeeds
+  Then a delivered event is added and the failure event remains in History
+
+Scenario: Truck-stop notice shows trusted and contextual figures (F-6)
+  Given the exchange starts Fri 20 Nov 2026 18:00
+  And Jason writes offline at Wed 18 Nov 2026 16:00
+  When the server receives the request at Wed 18 Nov 2026 20:00
+  Then it shows "Short notice: 46 h at server (plan asks for 48 h); written 50 h before (device time, not verified)"
+  And the official threshold result remains based on 46 h at server
+
+Scenario: Successful submission is visible (F-8)
+  When Jason successfully submits a request
+  Then he sees "Request submitted"
+  And the Requests area opens with the new request visible
+```
+
+## Revision history
+
+- V2, F-1: FR-010 now requires the written time on an unsent item.
+- V2, F-2: FR-005 now reserves request statuses for server-held requests and uses "Not sent yet" before receipt.
+- V2, F-3: FR-009 and A-12 require an explicit request-detail open before recording read.
+- V2, F-4: FR-009 and A-13 distinguish waiting for an offline recipient from delivery failure.
+- V2, F-5: FR-009 and A-15 add recoverable failed delivery while keeping append-only evidence.
+- V2, F-6: FR-004 shows the trusted server notice and the unverified written-time context together; Q-3 remains open.
+- V2, F-7 to F-10: FR-002, FR-003, FR-006 and FR-013 clarify the low-risk usability behavior found in V1.
+
 ## Out of Scope
 
 Carried forward from `docs/initial-spec.md` §7 and `docs/goal-model.md` §2 (deferred slices
@@ -539,12 +599,20 @@ notifications. Each stays in the goal model for a later sprint; none of it is bu
 - **A-7**: "read" means the other parent opened the request in the app (used by FR-009).
 - **A-8**: only messages tied to a specific request (its reason, the response, follow-ups) are in
   scope; general chat not tied to a request is not (used by FR-009).
+- **A-12**: "read" means the recipient explicitly opens the request details. Rendering a card in
+  Home or Requests does not count. This replaces A-7 for V2 (F-3, FR-009).
+- **A-13**: "Waiting to be delivered (other parent offline)" is a delivery state distinct from
+  the failure state "Not delivered" (F-4, FR-009).
+- **A-14**: an item that exists only on the sender's device has no server request status. It shows
+  "Not sent yet" and its unverified written time (F-1, F-2, FR-005, FR-010).
+- **A-15**: a failed delivery can be retried by the sender. Retry adds new delivery evidence and
+  never removes the failure event (F-5, FR-009, FR-011).
 - **Decisions carried forward, not re-opened by this spec** (`docs/goal-model.md` §5.3):
   - **X-1**: short notice is allowed and labelled, and still needs both parents to agree
     (FR-004, FR-005).
   - **X-2**: server time is official; phone time is shown as unverified alongside it (FR-009).
-  - **X-3**: notice is counted from the server-received time, with the written time shown next
-    to it, still open, and this prototype is meant to test it (FR-004, FR-010).
+  - **X-3**: the trusted server figure remains official. V2 also shows the written figure as
+    unverified context when the two differ. Q-3 stays open (FR-004, FR-010, F-6).
   - **X-4**: outcome wording describes what happened and who acted, never what a person is
     like, and nothing is counted (FR-005, FR-012).
   - **X-5**: an emergency claim never changes the calendar by itself; what a "formal decision"

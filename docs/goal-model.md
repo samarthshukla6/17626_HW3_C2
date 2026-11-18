@@ -119,7 +119,7 @@ flowchart TD
   DEF["Deferred slices, kept in the model<br/>D exchanges, E expenses, F export and access<br/>G school notices, H tone warning<br/>I child view, J calls<br/>(S-G-152 marked contradicted, see X-6)"]
 
   R04 -. "X-1 48h vs dispatch: allow and label" .- R10
-  R04 -. "X-3 which time counts: server, open" .- R09
+  R04 -. "X-3 both shown, server official, Q-3 open" .- R09
   R09 -. "X-2 server vs phone: keep both" .- R10
   R14 -. "X-5 emergency vs both confirm" .- R05
   R12 -. "X-4 outcome wording" .- DEF
@@ -237,3 +237,37 @@ None of these goals were removed. They're planned for later sprints.
 | H. Tone warning | S-G-138 to 141, 152; K-G-73 to 76 | E-69, E-50, E-51 | Who should see the warning is unresolved (X-6) | After Q-5 is answered |
 | I. Child view | S-G-62, 151; K-G-6 | E-68 | Lower priority than the parents' needs | Later |
 | J. Urgent calls | S-G-93 to 95, 118, 137 | E-52, E-53 | Stays outside the app until Q-6 is answered | Not planned |
+
+## 8. Revisions after evaluating V1
+
+We used V1 in the browser before changing the specification. The evaluation confirmed one implementation defect, five requirements issues, and four usability candidates in `docs/traceability.md`. We kept every V1 goal, conflict and open question. These revisions change how the selected goals are met in V2.
+
+### 8.1 X-3 notice-time compromise
+
+V1 used only the server-received time for its notice label. In F-6, Jason wrote at a truck stop 50 hours before the exchange, but the request reached the server 46 hours before and was labelled short notice. Using only the server time follows Ruth's trusted-time rule (E-32), but it hides the situation Jason described (E-30, E-31, E-36, E-62).
+
+V2 keeps the server figure as the official notice value and threshold decision. When the written and server figures differ, it also shows the written figure as context, labelled "device time, not verified". The truck-stop example becomes "Short notice: 46 h at server; written 50 h before (device time, not verified)". This does not treat the phone clock as trusted. Q-3 stays open because Melissa, Jason and Ruth still need to decide which figure should count outside this prototype.
+
+The X-3 link in the goal model is therefore revised from "server, open" to "both shown, server official, Q-3 open". SP-4 and SP-6 are better supported because V2 shows the trusted decision and the unverified context together.
+
+### 8.2 Refined assumptions
+
+| ID | V2 assumption | Finding | Used in |
+|---|---|---|---|
+| A-12 | "Read" means the recipient explicitly opens the request details. Rendering a card in Home or Requests does not count. | F-3 | REQ-09 |
+| A-13 | An item waiting because the recipient is offline is labelled "Waiting to be delivered (other parent offline)". This is distinct from the failure state "Not delivered". | F-4 | REQ-09 |
+| A-14 | An item that exists only on the sender's device shows "Not sent yet" instead of a request status. It also shows its written device time. | F-1, F-2 | REQ-05, REQ-10 |
+| A-15 | After a recorded delivery failure, the sender may retry. A successful retry appends a delivery event and keeps the earlier failure in the history. | F-5 | REQ-09, REQ-11 |
+
+### 8.3 Usability decisions
+
+F-7 to F-10 do not introduce a new product capability. They make existing flows understandable and usable at the required 375 px width.
+
+- F-7: the selected parent is shown with a persistent, high-contrast state in the existing A-1 switch (REQ-02, SP-2).
+- F-8: a successful request submission shows a visible confirmation and opens Requests, where the new request can be reviewed (REQ-02, REQ-03, SP-2, SP-3).
+- F-9: request events and their timestamps use separate lines and spacing (REQ-09, REQ-13, SP-6, SP-9).
+- F-10: the alternative datetime input keeps a valid `datetime-local` value until confirmation, so the existing decline-with-alternative requirement can be completed (REQ-06, SP-2, SP-3). Code inspection showed that V1 replaced the control's local value with an ISO value it could not display, so we classify F-10 as an implementation defect.
+
+### 8.4 Deferred decision
+
+We did not add automatic repeated delivery attempts or background notifications. V2 provides an explicit retry after a recorded failure. Production retry timing and limits need infrastructure and stakeholder input that are outside this prototype. The deferred slices D to J remain unchanged.
