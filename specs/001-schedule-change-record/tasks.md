@@ -308,4 +308,4 @@ Each story after US1 extends `requests.ts` rather than replacing it, so earlier 
 - [x] T079 [P] [US2] Implement selected-parent styling and submission feedback/navigation in `frontend/src/app/ViewingAsSwitch.tsx`, `frontend/src/app/App.tsx`, `frontend/src/app/Schedule.tsx` and `frontend/src/index.css`. (F-7, F-8, REQ-02, REQ-03; depends on T072)
 - [x] T080 [P] [US1] Fix alternative datetime value handling in `frontend/src/app/RequestCard.tsx`. (F-10, REQ-06; depends on T073)
 - [x] T081 [P] [US4] Add readable block formatting for request events and timestamps in `frontend/src/app/RequestCard.tsx`, `frontend/src/app/History.tsx`, `frontend/src/app/EventDetail.tsx` and `frontend/src/index.css`. (F-9, REQ-09, REQ-13; depends on T074)
-- [ ] T082 Run `npm test -- --run` and `npm run build` in `frontend/`, then update `docs/traceability.md` with V2 evidence while leaving browser-only V2 status pending. (depends on T075-T081)
+- [x] T082 Run `npm test -- --run` and `npm run build` in `frontend/`, then update `docs/traceability.md` with V2 evidence while leaving browser-only V2 status pending. (depends on T075-T081)
