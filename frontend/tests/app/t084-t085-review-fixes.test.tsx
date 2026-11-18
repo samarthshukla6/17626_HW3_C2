@@ -72,7 +72,6 @@ describe("T085 (REQ-02, REQ-03, F-13): the submission confirmation is only for t
 
   async function submitAsJason(user: ReturnType<typeof userEvent.setup>): Promise<void> {
     await user.click(screen.getByRole("button", { name: "Jason" }));
-    await user.click(screen.getByRole("button", { name: "Schedule" }));
     await user.click(screen.getAllByRole("button", { name: "Request a change" })[0]);
     const dateInput = document.querySelector<HTMLInputElement>("form.request-form input[type=datetime-local]")!;
     await user.type(dateInput, "2026-11-27T18:00");
@@ -94,11 +93,11 @@ describe("T085 (REQ-02, REQ-03, F-13): the submission confirmation is only for t
     expect(screen.queryByText("Request submitted")).not.toBeInTheDocument();
   });
 
-  it("clears the confirmation when Jason navigates to another area", async () => {
+  it("clears the confirmation when Jason picks another exchange", async () => {
     const user = userEvent.setup();
     render(<App />);
     await submitAsJason(user);
-    await user.click(screen.getByRole("button", { name: "History" }));
+    await user.click(screen.getByRole("button", { name: "Open Sun 22 Nov" }));
     expect(screen.queryByText("Request submitted")).not.toBeInTheDocument();
   });
 });
