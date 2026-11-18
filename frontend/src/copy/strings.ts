@@ -104,6 +104,24 @@ export const strings = {
     }
   },
 
+  /**
+   * T086 (REQ-02, REQ-11, REQ-12, F-14): readable, neutral label for every
+   * entry in the History area, including the delivery and read entries,
+   * which are authored on behalf of the recipient's app.
+   */
+  historyLabel: (type: EventType, author: Parent): string => {
+    switch (type) {
+      case "delivered":
+        return `Delivered to ${author}`;
+      case "read":
+        return `Read by ${author}`;
+      case "delivery-failed":
+        return `Not delivered to ${author}`;
+      default:
+        return strings.itemLabel(type, author);
+    }
+  },
+
   writtenDeviceTime: (time: string): string => `Written ${time} (device time, not verified)`,
 
   receivedByServer: (time: string): string => `Received by server ${time}`,

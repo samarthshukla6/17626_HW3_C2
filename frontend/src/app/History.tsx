@@ -1,5 +1,6 @@
 import { getHistory } from "../domain/record";
 import { formatDateTime } from "../domain/format";
+import { strings } from "../copy/strings";
 
 /** REQ-02 (History area): every Case Record Entry, in time order. */
 export function History(): React.ReactElement {
@@ -14,7 +15,7 @@ export function History(): React.ReactElement {
         <ul>
           {events.map((event) => (
             <li key={event.id} className="timeline-item">
-              <span className="timeline-item__description">{event.author}: {event.type}</span>
+              <span className="timeline-item__description">{strings.historyLabel(event.type, event.author)}</span>
               <span className="timeline-item__time">{formatDateTime(event.serverTime)}</span>
             </li>
           ))}

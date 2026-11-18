@@ -570,6 +570,7 @@ Scenario: Successful submission is visible (F-8)
 - V2, F-5: FR-009 and A-15 add recoverable failed delivery while keeping append-only evidence.
 - V2, F-6: FR-004 shows the trusted server notice and the unverified written-time context together; Q-3 remains open.
 - V2, F-7 to F-10: FR-002, FR-003, FR-006 and FR-013 clarify the low-risk usability behavior found in V1.
+- V2 verification, F-11 to F-14: no spec change. Using V2 in a browser found four implementation defects against FR-002, FR-003 and FR-009 to FR-012 as already written (delivery on reconnect, separate delivered and read lines, the confirmation shown to the wrong parent, raw labels in History). They were fixed in code under tasks T083 to T086.
 
 ## Out of Scope
 
